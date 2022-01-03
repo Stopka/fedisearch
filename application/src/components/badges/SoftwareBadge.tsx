@@ -7,7 +7,7 @@ const SoftwareBadge:React.FC<{softwareName:string|null}> = ({ softwareName }) =>
     event.target.src = fallbackImage
   }
 
-  return (<div className={'badge software-name'}>
+  return (<div className={'badge software-name'} title={'Software name'}>
       <img className={'icon'}
            src={softwareName !== null ? `/software/${softwareName}.svg` : fallbackImage}
            alt={softwareName}
