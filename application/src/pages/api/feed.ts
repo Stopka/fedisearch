@@ -65,7 +65,8 @@ const handleFeedSearch = async (req:NextApiRequest, res:NextApiResponse<FeedResp
             softwareName: feed.node.softwareName
           },
           type: feed.type,
-          url: feed.url
+          url: feed.url,
+          parentFeed: null // TODO find parent data
         }
       })
     })

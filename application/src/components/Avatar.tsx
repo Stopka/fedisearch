@@ -1,7 +1,6 @@
 import React from 'react'
-import { FeedResponseItem } from '../types/FeedResponse'
 
-const Avatar:React.FC<{feed:FeedResponseItem}> = ({ feed }) => {
+const Avatar:React.FC<{url:string|null|undefined}> = ({ url }) => {
   const fallbackImage = '/avatar.svg'
 
   const handleAvatarImageError = (event) => {
@@ -11,7 +10,7 @@ const Avatar:React.FC<{feed:FeedResponseItem}> = ({ feed }) => {
   return (
       <img
           className={'avatar'}
-          src={feed.avatar ?? fallbackImage}
+          src={url ?? fallbackImage}
           alt={'Avatar'}
           onError={handleAvatarImageError}
       />

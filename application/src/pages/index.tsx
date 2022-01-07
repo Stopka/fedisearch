@@ -2,14 +2,16 @@ import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { feedResponseSchema } from '../types/FeedResponse'
-import { tracker } from '../lib/matomo'
 import Loader from '../components/Loader'
 import Results from '../components/Results'
 import Layout, { siteTitle } from '../components/Layout'
+import { matomoConfig } from '../lib/matomoConfig'
+import getMatomo from '../lib/getMatomo'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 let source = axios.CancelToken.source()
 
-const Home:React.FC = () => {
+const Home:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const [query, setQuery] = useState('')
   const [submitted, setSubmitted] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -54,7 +56,7 @@ const Home:React.FC = () => {
     console.info('Loading new query search', { query, page })
     setLoading(true)
     setTimeout(search)
-    tracker.trackEvent({
+    getMatomo(matomoConfig).trackEvent({
       category: 'feeds',
       action: 'new-search'
     })
@@ -67,7 +69,7 @@ const Home:React.FC = () => {
     }
     console.info('Loading next page', { query, page })
     setTimeout(search)
-    tracker.trackEvent({
+    getMatomo(matomoConfig).trackEvent({
       category: 'feeds',
       action: 'next-page',
       customDimensions: [
@@ -102,7 +104,7 @@ const Home:React.FC = () => {
   useEffect(loadNextPageResults, [page])
 
   return (
-        <Layout>
+        <Layout matomoConfig={matomoConfig}>
             <Head>
                 <title>{siteTitle}</title>
             </Head>
@@ -152,6 +154,15 @@ const Home:React.FC = () => {
               : ''}
         </Layout>
   )
+}
+
+export const getServerSideProps:GetServerSideProps = async (context) => {
+  console.info('Loading matomo config', matomoConfig)
+  return {
+    props: {
+      matomoConfig
+    }
+  }
 }
 
 export default Home

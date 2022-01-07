@@ -8,6 +8,7 @@ import CreatedAtBadge from './badges/CreatedAtBadge'
 import LastPostAtBadge from './badges/LastPostAtBadge'
 import BotBadge from './badges/BotBadge'
 import { FeedResponseField, FeedResponseItem } from '../types/FeedResponse'
+import ParentFeed from './ParentFeed'
 
 const Result:React.FC<{ feed:FeedResponseItem }> = ({ feed }) => {
   const fallbackEmojiImage = '/emoji.svg'
@@ -33,9 +34,10 @@ const Result:React.FC<{ feed:FeedResponseItem }> = ({ feed }) => {
                  dangerouslySetInnerHTML={{ __html: striptags(feed.displayName, ['img']) }}
               />
           </h3>
-        <Avatar feed={feed}/>
+        <Avatar url={feed.avatar}/>
         <div className={'address'}>
             <span>{feed.name}@{feed.node.domain}</span>
+            <ParentFeed feed={feed.parentFeed}/>
         </div>
       <div className={'badges'}>
           <SoftwareBadge softwareName={feed.node.softwareName}/>

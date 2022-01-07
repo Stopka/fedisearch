@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
 import Head from 'next/head'
-import { tracker } from '../lib/matomo'
 import Footer from './Footer'
+import getMatomo from '../lib/getMatomo'
+import { UserOptions } from '@datapunt/matomo-tracker-js/es/types'
 
 export const siteTitle = 'FediSearch'
 
-const Layout:React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout:React.FC<{ matomoConfig:UserOptions, children: React.ReactNode }> = ({ matomoConfig, children }) => {
   useEffect(() => {
-    tracker.trackPageView()
+    getMatomo(matomoConfig).trackPageView()
   })
   return (
         <div className={'container'}>

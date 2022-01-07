@@ -1,7 +1,7 @@
 FROM node:16-bullseye AS build
 ENV POSTGRES_URL='postgresql://fedisearch:passwd@postgres:5432/fedisearch?schema=public' \
-    NEXT_PUBLIC_MATOMO_URL='' \
-    NEXT_PUBLIC_MATOMO_SITE_ID='' \
+    MATOMO_URL='' \
+    MATOMO_SITE_ID='' \
     TZ='UTC'
 WORKDIR /srv
 COPY application/package*.json ./

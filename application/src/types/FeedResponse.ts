@@ -5,6 +5,14 @@ export const feedResponseFieldSchema = z.object({
   value: z.string()
 })
 
+export const feedResponseParentSchema = z.object({
+  name: z.string(),
+  domain: z.string(),
+  displayName: z.string().nullable(),
+  avatar: z.string().nullable(),
+  url: z.string()
+})
+
 export const feedResponseItemSchema = z.object({
   avatar: z.string().url().nullable(),
   bot: z.boolean().nullable(),
@@ -22,7 +30,8 @@ export const feedResponseItemSchema = z.object({
     softwareName: z.string()
   }),
   type: z.enum(['account', 'channel']),
-  url: z.string().url()
+  url: z.string().url(),
+  parentFeed: z.nullable(feedResponseParentSchema)
 })
 
 export const feedResponseSchema = z.object({
@@ -33,3 +42,4 @@ export const feedResponseSchema = z.object({
 export type FeedResponse = z.infer<typeof feedResponseSchema>
 export type FeedResponseItem = z.infer<typeof feedResponseItemSchema>
 export type FeedResponseField = z.infer<typeof feedResponseFieldSchema>
+export type FeedResponseParent = z.infer<typeof feedResponseParentSchema>
