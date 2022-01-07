@@ -9,7 +9,7 @@ export const siteTitle = 'FediSearch'
 const Layout:React.FC<{ matomoConfig:UserOptions, children: React.ReactNode }> = ({ matomoConfig, children }) => {
   useEffect(() => {
     getMatomo(matomoConfig).trackPageView()
-  })
+  }, [])
   return (
         <div className={'container'}>
             <Head>
