@@ -5,6 +5,7 @@ import getMatomo from '../lib/getMatomo'
 import { UserOptions } from '@datapunt/matomo-tracker-js/es/types'
 
 export const siteTitle = 'FediSearch'
+export const siteDescription = 'Search people on Fediverse'
 
 const Layout:React.FC<{ matomoConfig:UserOptions, children: React.ReactNode }> = ({ matomoConfig, children }) => {
   useEffect(() => {
@@ -13,17 +14,14 @@ const Layout:React.FC<{ matomoConfig:UserOptions, children: React.ReactNode }> =
   return (
         <div className={'container'}>
             <Head>
+                <title>{siteTitle}</title>
                 <link rel="icon" href="/fedisearch.png"/>
-                <meta
-                    name="description"
-                    content="Learn how to build a personal website using Next.js"
-                />
-                <meta
-                    property="og:image"
-                    content={'/fedisearch.png'}
-                />
-                <meta name="og:title" content={siteTitle}/>
+                <meta name="description" content={siteDescription}/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta property="og:title" content={siteTitle}/>
+                <meta property="og:description" content={siteDescription}/>
+                <meta property="og:image" content="/fedisearch.png"/>
+                <meta property="og:type" content="website"/>
             </Head>
             <header>
                 <h1><a href={'/'}>FediSearch</a></h1>
