@@ -7,6 +7,7 @@ WORKDIR /srv
 COPY application/package*.json ./
 COPY application/prisma ./prisma/
 RUN npm install --frozen-lockfile
+RUN npm run prisma:generate
 COPY application/. .
 RUN npm run build
 

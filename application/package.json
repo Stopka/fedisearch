@@ -10,7 +10,8 @@
     "dev": "next dev ./src --hostname 0.0.0.0",
     "build": "next build ./src",
     "start": "next start ./src",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
     "@datapunt/matomo-tracker-js": "^0.5.1",

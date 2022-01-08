@@ -254,11 +254,13 @@ img {
     grid-column: main / end;
     grid-row: start ;
     margin: 0;
+    word-break: break-word;
   }
 
   .address {
     grid-column: main / end;
     grid-row: address;
+    word-break: break-word;
   }
 
   .badges{
@@ -304,6 +306,7 @@ img {
       border: 1px solid var(--main-bg-color);
       border-radius: 0.3em;
       padding: 0.3em;
+      word-break: break-word;
     }
 
     th {
@@ -314,7 +317,7 @@ img {
   .description {
     grid-column: start/end;
     grid-row: span 1;
-
+    word-break: break-word;
     p {
       margin: 0 0 1em 0;
 
