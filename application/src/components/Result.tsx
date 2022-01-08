@@ -9,6 +9,7 @@ import LastPostAtBadge from './badges/LastPostAtBadge'
 import BotBadge from './badges/BotBadge'
 import { FeedResponseField, FeedResponseItem } from '../types/FeedResponse'
 import ParentFeed from './ParentFeed'
+import StatusesCountBadge from './badges/StatusesCountBadge'
 
 const Result:React.FC<{ feed:FeedResponseItem }> = ({ feed }) => {
   const fallbackEmojiImage = '/emoji.svg'
@@ -43,6 +44,7 @@ const Result:React.FC<{ feed:FeedResponseItem }> = ({ feed }) => {
           <SoftwareBadge softwareName={feed.node.softwareName}/>
           <FeedTypeBadge type={feed.type}/>
           <SubscriptionsBadge followingCount={feed.followingCount} followersCount={feed.followersCount}/>
+          <StatusesCountBadge statusesCount={feed.statusesCount}/>
           <CreatedAtBadge createdAt={feed.createdAt}/>
           <LastPostAtBadge lastStatusAt={feed.lastStatusAt}/>
           <BotBadge bot={feed.bot}/>
