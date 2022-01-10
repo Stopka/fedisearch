@@ -4,7 +4,7 @@ import { feedRequestSchema } from '../../types/FeedRequest'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { FeedResponse } from '../../types/FeedResponse'
 
-const handleFeedSearch = async (req:NextApiRequest, res:NextApiResponse<FeedResponse>):Promise<void> => {
+const handleFeedSearch = async (req: NextApiRequest, res: NextApiResponse<FeedResponse>): Promise<void> => {
   console.info('Searching feeds', { query: req.query })
 
   const feedRequest = feedRequestSchema.parse(req.query)
@@ -36,7 +36,18 @@ const handleFeedSearch = async (req:NextApiRequest, res:NextApiResponse<FeedResp
       emails: true,
       fields: true,
       node: true
-    }
+    },
+    orderBy: [
+      {
+        lastStatusAt: 'desc'
+      },
+      {
+        followersCount: 'desc'
+      },
+      {
+        statusesCount: 'desc'
+      }
+    ]
   })
 
   res.status(200)

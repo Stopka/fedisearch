@@ -101,14 +101,14 @@ a:hover {
   text-align: center;
   width: 100%;
   grid-gap: 1em;
-  box-sizing: content-box;
+  box-sizing: border-box;
 
   header {
     grid-column: start / end;
     grid-row: start / message;
     display: grid;
 
-    grid-template-columns: [start] auto [text] auto [end];
+    grid-template-columns: [start] 4em [text] auto [end];
     grid-template-rows: [start] auto [end];
     grid-gap: 1em;
 
@@ -172,7 +172,7 @@ form {
     }
 
     svg {
-      vertical-align: middle;
+      vertical-align: baseline;
       width: 1em;
       max-width: 1em;
       max-height: 1em;
@@ -270,6 +270,7 @@ img {
       display: none;
     }
     img,svg{
+      width: 100%;
       max-width: 1em;
       max-height: 1em;
       display: inline;
@@ -279,7 +280,7 @@ img {
     }
 
     .badge{
-      display: inline;
+      display: inline-block;
       margin-right: 1em;
       white-space: nowrap;
     }

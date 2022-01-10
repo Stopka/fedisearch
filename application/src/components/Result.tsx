@@ -32,7 +32,7 @@ const Result:React.FC<{ feed:FeedResponseItem }> = ({ feed }) => {
       <section className={'feed'}>
           <h3 className={'display-name with-emoji'}>
               <a href={feed.url}
-                 dangerouslySetInnerHTML={{ __html: striptags(feed.displayName, ['img']) }}
+                 dangerouslySetInnerHTML={{ __html: striptags(feed.displayName !== '' ? feed.displayName : feed.name, ['img']) }}
               />
           </h3>
         <Avatar url={feed.avatar}/>
