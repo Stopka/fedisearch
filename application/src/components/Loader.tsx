@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react'
 
-const Loader:React.FC<{ children: ReactNode, loading: boolean }> = ({ children, loading }) => {
+const Loader:React.FC<{ children: ReactNode, loading: boolean, hideContent?:boolean }> = ({ hideContent, children, loading }) => {
   return (
         <div className={'loader' + (loading ? ' -loading' : '')}>
             <div className={'loader-content'}>
-                {children}
+                { hideContent && loading ? '' : children}
             </div>
             <div className={'loader-visualisation'}>
             {loading

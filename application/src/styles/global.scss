@@ -6,14 +6,38 @@
   --accent-color: #00a2fe;
   --front-bg-color: #3a3c40;
   --front-fg-color: rgb(156, 156, 156);
-  @media (prefers-color-scheme: light) {
-    --main-bg-color: #ededed;
-    --main-fg-color: #212224;
-    --front-bg-color: rgb(204, 204, 204);
-    --front-fg-color:  #3a3c40;
-  }
+  //@media (prefers-color-scheme: light) {
+  //  --main-bg-color: #ededed;
+  //  --main-fg-color: #212224;
+  //  --front-bg-color: rgb(204, 204, 204);
+  //  --front-fg-color: #3a3c40;
+  //}
 }
 
+table{
+  width: 100%;
+  text-align: left;
+  img{
+    max-width: 1em;
+    max-height: 1em;
+    display: inline;
+    margin-right: 0.5em;
+  }
+
+  td, th {
+    border: 1px solid var(--front-bg-color);
+    border-radius: 0.3em;
+    padding: 0.3em;
+    word-break: break-word;
+    &.number-cell{
+      text-align: right;
+    }
+  }
+
+  th {
+    background-color: var(--front-bg-color);
+  }
+}
 
 input,
 textarea,
@@ -72,7 +96,8 @@ body {
   font-size: 18px;
   background-color: var(--main-bg-color);
   color: var(--main-fg-color);
-  &>div{
+
+  & > div {
     width: 100%;
   }
 }
@@ -134,7 +159,8 @@ a:hover {
     .logo {
       grid-column: start/ text;
       grid-row: start/end;
-      img{
+
+      img {
         height: 100%;
       }
     }
@@ -177,6 +203,60 @@ form {
       max-width: 1em;
       max-height: 1em;
       fill: var(--main-bg-color);
+    }
+  }
+}
+
+nav {
+  ul {
+    padding: 0;
+    margin: 0;
+    li {
+      display: inline;
+      margin: 2px;
+      padding: 0;
+      list-style: none;
+      a {
+        padding: .5em;
+        background-color: var(--front-fg-color);
+        color: var(--main-bg-color);
+        white-space: nowrap;
+        box-shadow: var(--shadow);
+        &:hover{
+          outline: 1px solid var(--front-fg-color);
+          text-decoration: none;
+          outline-offset: 2px;
+        }
+        &:active,
+        &.active{
+          font-weight: bold;
+          background-color: var(--front-fg-color);
+          color: var(--front-bg-color);
+          svg{
+            max-width: 1.5em;
+            max-height: 1.5em;
+            position: relative;
+            top: 0.25em;
+          }
+        }
+        svg{
+          max-width: 1em;
+          max-height: 1em;
+          margin-right: 0.5em;
+        }
+      }
+      &:first-child{
+        a{
+          border-bottom-left-radius: 2em;
+          border-top-left-radius: 2em;
+        }
+      }
+      &:last-child{
+        a{
+          border-bottom-right-radius: 2em;
+          border-top-right-radius: 2em;
+        }
+      }
     }
   }
 }
@@ -246,13 +326,13 @@ img {
     border-radius: 0.5em;
     width: 100%;
     grid-column: start /main;
-    grid-row: span 3 ;
+    grid-row: span 3;
   }
 
 
   .display-name {
     grid-column: main / end;
-    grid-row: start ;
+    grid-row: start;
     margin: 0;
     word-break: break-word;
   }
@@ -263,13 +343,15 @@ img {
     word-break: break-word;
   }
 
-  .badges{
+  .badges {
     grid-column: main /end;
     grid-row: badges;
-    .label{
+
+    .label {
       display: none;
     }
-    img,svg{
+
+    img, svg {
       width: 100%;
       max-width: 1em;
       max-height: 1em;
@@ -279,17 +361,18 @@ img {
       fill: var(--main-fg-color);
     }
 
-    .badge{
+    .badge {
       display: inline-block;
       margin-right: 1em;
       white-space: nowrap;
     }
 
     .subscriptions {
-      &>*{
+      & > * {
         display: inline;
         margin-right: 0.3em;
-        &:last-child::before{
+
+        &:last-child::before {
           content: '/';
           display: inline;
           margin-right: 0.3em;
@@ -319,6 +402,7 @@ img {
     grid-column: start/end;
     grid-row: span 1;
     word-break: break-word;
+
     p {
       margin: 0 0 1em 0;
 
@@ -330,15 +414,15 @@ img {
   }
 
   @media (max-width: 640px) {
-    .display-name{
+    .display-name {
       grid-column-start: start;
     }
-    .address{
+    .address {
       grid-column-start: start;
       margin-top: -1em;
     }
-    .avatar{
-      grid-row-start: badges ;
+    .avatar {
+      grid-row-start: badges;
     }
   }
 }
@@ -352,9 +436,10 @@ img {
   }
 }
 
-footer{
+footer {
   color: var(--front-fg-color);
-  a{
+
+  a {
     color: inherit;
   }
 }
