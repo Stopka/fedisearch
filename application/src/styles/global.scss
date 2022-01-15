@@ -34,6 +34,22 @@ table {
     &.number-cell {
       text-align: right;
     }
+
+    .progressbar {
+      background-color: var(--accent-color);
+      height: 2px;
+      width: 100%;
+      border-radius: 1px;
+    }
+
+    .sort-toggle{
+      svg{
+        max-width: 1em;
+        max-height: 1em;
+        margin-left: 0.5em;
+        vertical-align: baseline;
+      }
+    }
   }
 
   th {
@@ -238,6 +254,7 @@ nav {
         &.active {
           font-weight: bold;
           color: var(--main-fg-color);
+
           svg {
             max-width: 1.5em;
             max-height: 1.5em;
@@ -253,6 +270,8 @@ nav {
 }
 
 .loader {
+  text-align: center;
+
   .loader-visualisation {
     margin: 1em 0;
 

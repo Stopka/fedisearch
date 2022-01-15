@@ -2,6 +2,7 @@ import prisma from '../../lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { StatsResponse, StatsResponseSoftware } from '../../types/StatsResponse'
 import { cache } from '../../lib/cache'
+import { statsRequestSchema } from '../../types/StatsRequest'
 
 interface StatsItem {
     softwarename: string | null,
@@ -14,9 +15,13 @@ interface StatsItem {
 const CACHE_KEY = 'stats'
 
 const handleGetStats = async (req: NextApiRequest, res: NextApiResponse<StatsResponse>): Promise<void> => {
-  if (!cache.has(CACHE_KEY)) {
-    console.info('Retrieving new stats')
-    const data = await prisma.$queryRaw<StatsItem[]>`
+  const query = await statsRequestSchema.parseAsync(req.query)
+  query.sortBy = query.sortBy ?? 'nodeCount'
+  query.sortWay = query.sortWay ?? 'desc'
+  const cacheKey = `${CACHE_KEY}_${query.sortWay}_${query.sortBy}`
+  if (!cache.has(cacheKey)) {
+    console.info('Retrieving new stats', { cacheKey, query })
+    const data = await prisma.$queryRawUnsafe<StatsItem[]>(`
           select n."softwareName" as softwarename,
                  count(n.id)      as nodecount,
                  (
@@ -40,9 +45,9 @@ const handleGetStats = async (req: NextApiRequest, res: NextApiResponse<StatsRes
           from "Node" n
           group by n."softwareName"
           having count(n.id) > 1
-          order by nodecount desc;
-      `
-    cache.set<StatsResponse>(CACHE_KEY, {
+          order by ${query.sortBy.toLowerCase() + ' ' + query.sortWay.toUpperCase()};
+      `)
+    cache.set<StatsResponse>(cacheKey, {
       softwares: data.map(
         (item: StatsItem): StatsResponseSoftware => {
           return {
@@ -56,9 +61,9 @@ const handleGetStats = async (req: NextApiRequest, res: NextApiResponse<StatsRes
       )
     }, parseInt(process.env.STATS_CACHE_MINUTES ?? '60') * 60 * 1000)
   }
-  console.info('Returning stats from cache')
+  console.info('Returning stats from cache', { cacheKey, query })
   res.status(200)
-    .json(cache.get<StatsResponse>(CACHE_KEY))
+    .json(cache.get<StatsResponse>(cacheKey))
 }
 
 export default handleGetStats

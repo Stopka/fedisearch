@@ -131,7 +131,7 @@ const Home:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
                 <span>Search</span>
               </button>
             </form>
-            <Loader loading={loading}>
+            <Loader loading={loading} showBottom={true}>
                 {
                     loaded
                       ? <Results feeds={results}/>
