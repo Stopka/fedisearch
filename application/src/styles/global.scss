@@ -14,10 +14,11 @@
   //}
 }
 
-table{
+table {
   width: 100%;
   text-align: left;
-  img{
+
+  img {
     max-width: 1em;
     max-height: 1em;
     display: inline;
@@ -29,7 +30,8 @@ table{
     border-radius: 0.3em;
     padding: 0.3em;
     word-break: break-word;
-    &.number-cell{
+
+    &.number-cell {
       text-align: right;
     }
   }
@@ -211,50 +213,39 @@ nav {
   ul {
     padding: 0;
     margin: 0;
+
     li {
       display: inline;
-      margin: 2px;
+      margin: 0.5em;
       padding: 0;
       list-style: none;
+
       a {
-        padding: .5em;
-        background-color: var(--front-fg-color);
-        color: var(--main-bg-color);
         white-space: nowrap;
-        box-shadow: var(--shadow);
-        &:hover{
-          outline: 1px solid var(--front-fg-color);
-          text-decoration: none;
-          outline-offset: 2px;
+
+        svg {
+          max-width: 1em;
+          max-height: 1em;
+          margin-right: 0.5em;
+
         }
-        &:active,
-        &.active{
+
+        &:hover svg {
+          outline: 1px solid var(--accent-color);
+          outline-offset: 3px;
+        }
+
+        &.active {
           font-weight: bold;
-          background-color: var(--front-fg-color);
-          color: var(--front-bg-color);
-          svg{
+          color: var(--main-fg-color);
+          svg {
             max-width: 1.5em;
             max-height: 1.5em;
             position: relative;
             top: 0.25em;
+
+            outline-color: var(--main-fg-color);
           }
-        }
-        svg{
-          max-width: 1em;
-          max-height: 1em;
-          margin-right: 0.5em;
-        }
-      }
-      &:first-child{
-        a{
-          border-bottom-left-radius: 2em;
-          border-top-left-radius: 2em;
-        }
-      }
-      &:last-child{
-        a{
-          border-bottom-right-radius: 2em;
-          border-top-right-radius: 2em;
         }
       }
     }
