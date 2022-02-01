@@ -1,10 +1,10 @@
 import React from 'react'
-import { StatsRequest, StatsRequestSortBy } from '../types/StatsRequest'
+import { Sort } from '../types/Sort'
 
 const SortToggle: React.FC<{
   onToggle:(StatsRequestSortBy)=>void,
-  field:StatsRequestSortBy,
-  sort: StatsRequest
+  field:string,
+  sort: Sort
 }> = ({ onToggle, field, sort, children }) => {
   return (
     <a className={'sort-toggle'} href={'#'} onClick={() => onToggle(field)}>

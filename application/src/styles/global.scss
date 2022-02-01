@@ -17,6 +17,7 @@
 table {
   width: 100%;
   text-align: left;
+  margin-bottom: 1em;
 
   img {
     max-width: 1em;
@@ -29,7 +30,6 @@ table {
     border: 1px solid var(--front-bg-color);
     border-radius: 0.3em;
     padding: 0.3em;
-    word-break: break-word;
 
     &.number-cell {
       text-align: right;
@@ -223,6 +223,8 @@ form {
       fill: var(--main-bg-color);
     }
   }
+
+  margin-bottom: 1em;
 }
 
 nav {
@@ -344,13 +346,11 @@ img {
     grid-column: main / end;
     grid-row: start;
     margin: 0;
-    word-break: break-word;
   }
 
   .address {
     grid-column: main / end;
     grid-row: address;
-    word-break: break-word;
   }
 
   .badges {
@@ -400,7 +400,6 @@ img {
       border: 1px solid var(--main-bg-color);
       border-radius: 0.3em;
       padding: 0.3em;
-      word-break: break-word;
     }
 
     th {
@@ -411,7 +410,6 @@ img {
   .description {
     grid-column: start/end;
     grid-row: span 1;
-    word-break: break-word;
 
     p {
       margin: 0 0 1em 0;

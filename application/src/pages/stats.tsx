@@ -8,8 +8,10 @@ import axios from 'axios'
 import { StatsResponse, statsResponseSchema } from '../types/StatsResponse'
 import SoftwareBadge from '../components/badges/SoftwareBadge'
 import ProgressBar from '../components/ProgressBar'
-import { StatsRequest, StatsRequestSortBy } from '../types/StatsRequest'
+import { StatsRequestSortBy } from '../types/StatsRequest'
 import SortToggle from '../components/SortToggle'
+import getMatomo from '../lib/getMatomo'
+import { Sort } from '../types/Sort'
 
 let source = axios.CancelToken.source()
 
@@ -17,14 +19,25 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   const [loading, setLoading] = useState<boolean>(true)
   const [loaded, setLoaded] = useState<boolean>(false)
   const [stats, setStats] = useState<StatsResponse | null>(null)
-  const [sort, setSort] = useState<StatsRequest>({
+  const [sort, setSort] = useState<Sort>({
     sortBy: 'nodeCount', sortWay: 'desc'
   })
 
   const toggleSort = (sortBy: StatsRequestSortBy) => {
+    const sortWay = sort.sortBy === sortBy && sort.sortWay === 'asc' ? 'desc' : 'asc'
+    getMatomo(matomoConfig).trackEvent({
+      category: 'stats',
+      action: 'sort',
+      customDimensions: [
+        {
+          value: `${sortBy} ${sortWay}`,
+          id: 2
+        }
+      ]
+    })
     setSort({
       sortBy: sortBy,
-      sortWay: sort.sortBy === sortBy && sort.sortWay === 'asc' ? 'desc' : 'asc'
+      sortWay: sortWay
     })
   }
 

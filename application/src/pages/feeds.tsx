@@ -11,7 +11,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 let source = axios.CancelToken.source()
 
-const Home:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
+const Feeds:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const [query, setQuery] = useState('')
   const [submitted, setSubmitted] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -108,6 +108,7 @@ const Home:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
             <Head>
                 <title>{siteTitle}</title>
             </Head>
+            <h1>Search people</h1>
             <form onSubmit={handleSearchSubmit}>
               <label htmlFor={'query'}>Search on fediverse</label>
               <input
@@ -164,4 +165,4 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
   }
 }
 
-export default Home
+export default Feeds
