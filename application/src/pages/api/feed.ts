@@ -11,24 +11,14 @@ const handleFeedSearch = async (req: NextApiRequest, res: NextApiResponse<FeedRe
   const phrases = feedRequest.search.trim().split(/[\s+]+/)
   const feeds = await prisma.feed.findMany({
     where: {
-      OR: [
-        {
+      AND: phrases.map(phrase => {
+        return {
           fulltext: {
-            search: phrases.join(' & '),
+            contains: phrase,
             mode: 'insensitive'
           }
-        },
-        {
-          AND: phrases.map(phrase => {
-            return {
-              fulltext: {
-                contains: phrase,
-                mode: 'insensitive'
-              }
-            }
-          })
         }
-      ]
+      })
     },
     take: pageLimit + 1,
     skip: (feedRequest.page ?? 0) * pageLimit,
