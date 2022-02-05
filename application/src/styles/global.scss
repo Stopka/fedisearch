@@ -61,6 +61,7 @@ table.stats {
     width: 100%;
     grid-column: start /main;
     grid-row: span 4;
+    border-radius: $border-radius;
   }
 
 
@@ -97,6 +98,7 @@ table.stats {
   .description {
     grid-column: start/end;
     grid-row: span 1;
+    overflow-y: auto;
 
     p {
       margin: 0 0 1em 0;
