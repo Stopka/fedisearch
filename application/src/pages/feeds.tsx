@@ -3,15 +3,17 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { feedResponseSchema } from '../types/FeedResponse'
 import Loader from '../components/Loader'
-import Results from '../components/Results'
+import FeedResults from '../components/FeedResults'
 import Layout, { siteTitle } from '../components/Layout'
 import { matomoConfig } from '../lib/matomoConfig'
 import getMatomo from '../lib/getMatomo'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
 
 let source = axios.CancelToken.source()
 
-const Feeds:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
+const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const [query, setQuery] = useState('')
   const [submitted, setSubmitted] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -49,7 +51,7 @@ const Feeds:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
     setResults([])
     setHasMore(false)
     setLoaded(false)
-    if (query.length < 3) {
+    if (query.length < 1) {
       console.info('Query too short.')
       return
     }
@@ -108,55 +110,51 @@ const Feeds:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
             <Head>
                 <title>{siteTitle}</title>
             </Head>
-            <h1>Search people</h1>
+            <h1>People</h1>
             <form onSubmit={handleSearchSubmit}>
-              <label htmlFor={'query'}>Search on fediverse</label>
-              <input
-                  name={'query'}
-                  id={'query'}
-                  type={'search'}
-                  onChange={handleQueryChange}
-                  onBlur={handleQueryChange}
-                  value={query}
-                  placeholder={'Search on fediverse'}
-                  autoFocus={true}
-              />
-              <button type={'submit'}>
-                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search"
-                     className="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
-                     viewBox="0 0 512 512">
-                  <path fill="currentColor"
-                        d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" />
-                  <title>Search</title>
-                </svg>
-                <span>Search</span>
-              </button>
+                <div className="input-group mb-3">
+                    <input
+                        name={'query'}
+                        id={'query'}
+                        type={'search'}
+                        onChange={handleQueryChange}
+                        onBlur={handleQueryChange}
+                        value={query}
+                        placeholder={'Search people on Fediverse'}
+                        className="form-control"
+                        autoFocus={true}
+                        aria-label="Search people on Fediverse"
+                        aria-describedby="search-button"
+                    />
+                    <button type={'submit'} id={'search-button'} className={'btn btn-primary'}>
+                        <FontAwesomeIcon icon={faSearch} className={'margin-right'}/>
+                        <span>Search</span>
+                    </button>
+                </div>
             </form>
+
             <Loader loading={loading} showBottom={true}>
                 {
                     loaded
-                      ? <Results feeds={results}/>
+                      ? <FeedResults feeds={results}/>
                       : ''
                 }
             </Loader>
             {hasMore && !loading
               ? (
-                    <button className={'next-page'} onClick={handleLoadMore}>
-                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-double-down"
-                             className="svg-inline--fa fa-angle-double-down fa-w-10" role="img"
-                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                            <path fill="currentColor"
-                                  d="M143 256.3L7 120.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0L313 86.3c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.4 9.5-24.6 9.5-34 .1zm34 192l136-136c9.4-9.4 9.4-24.6 0-33.9l-22.6-22.6c-9.4-9.4-24.6-9.4-33.9 0L160 352.1l-96.4-96.4c-9.4-9.4-24.6-9.4-33.9 0L7 278.3c-9.4 9.4-9.4 24.6 0 33.9l136 136c9.4 9.5 24.6 9.5 34 .1z"/>
-                        </svg>
-                        <span>Load more</span>
-                    </button>
+                    <div className={'d-flex justify-content-center'}>
+                        <button className={'btn btn-secondary'} onClick={handleLoadMore}>
+                            <FontAwesomeIcon icon={faAngleDoubleDown} className={'margin-right'}/>
+                            <span>Load more</span>
+                        </button>
+                    </div>
                 )
               : ''}
         </Layout>
   )
 }
 
-export const getServerSideProps:GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   console.info('Loading matomo config', matomoConfig)
   return {
     props: {

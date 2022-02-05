@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer:React.FC = () => {
   return (
-    <footer>
+    <footer className={'text-center mt-5'}>
       ©{(new Date()).getFullYear()} <a href={'https://skorpil.cz'}>Štěpán Škorpil</a>
     </footer>
   )

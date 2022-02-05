@@ -18,6 +18,7 @@ export const feedResponseItemSchema = z.object({
   bot: z.boolean().nullable(),
   createdAt: z.string(),
   description: z.string(),
+
   displayName: z.string(),
   fields: z.array(feedResponseFieldSchema).nullable(),
   followersCount: z.number().nullable(),

@@ -5,9 +5,9 @@ const ProgressBar: React.FC<{ percents: number, way?: 'left' | 'right' | 'top' |
   percents = Math.round(percents)
   color = color ?? 'var(--accent-color)'
   return (
-        <div className={'progressbar'} style={{
-          background: `linear-gradient(to ${way}, ${color} ${percents}%, transparent ${percents}%`
-        }}/>
+      <div className="progress justify-content-end">
+          <div className="progress-bar" role="progressbar" style={{ width: `${percents}%` }} />
+      </div>
   )
 }
 

@@ -1,11 +1,19 @@
 module.exports = {
-  async redirects() {
+  webpack (config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack']
+    })
+
+    return config
+  },
+  async redirects () {
     return [
       {
         source: '/',
         destination: '/feeds',
-        permanent: true,
-      },
+        permanent: true
+      }
     ]
-  },
+  }
 }

@@ -96,88 +96,95 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                 <title>{'Stats | ' + siteTitle}</title>
             </Head>
             <h1>Index stats</h1>
-            <table>
-                <thead>
-                <tr>
-                    <th>
-                        <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
-                            Software name
-                        </SortToggle>
-                    </th>
-                    <th className={'number-cell'}>
-                        <SortToggle onToggle={toggleSort} field={'nodeCount'} sort={sort}>
-                            Instance count
-                        </SortToggle>
-                    </th>
-                    <th className={'number-cell'}>
-                        <SortToggle onToggle={toggleSort} field={'accountCount'} sort={sort}>
-                            Account count
-                        </SortToggle>
-                    </th>
-                    <th className={'number-cell'}>
-                        <SortToggle onToggle={toggleSort} field={'channelCount'} sort={sort}>
-                            Channel count
-                        </SortToggle>
-                    </th>
-                </tr>
-                </thead>
-                <Loader loading={loading} hideContent={!loaded} table={4} showTop={true}>
-                    {stats === null
-                      ? (<tr><td colSpan={4}><em>Failed to load stats data!</em></td></tr>)
-                      : (
-                          <>
-                              <tbody>
-                              {
-                                  stats.softwares.map((software, index) => {
-                                    return software.name !== null
-                                      ? (
-                                              <tr key={index}>
-                                                  <td>
-                                                      <SoftwareBadge softwareName={software.name}/>
-                                                  </td>
-                                                  <td className={'number-cell'}>
-                                                      <span>{software.nodeCount}</span>
-                                                      <ProgressBar way={'left'}
-                                                                   percents={100 * software.nodeCount / max.nodeCount}/>
-                                                  </td>
-                                                  <td className={'number-cell'}>
-                                                      <span>{software.accountCount}</span>
-                                                      <ProgressBar way={'left'}
-                                                                   percents={100 * software.accountCount / max.accountCount}/>
-                                                  </td>
-                                                  <td className={'number-cell'}>
-                                                      <span>{software.channelCount}</span>
-                                                      <ProgressBar way={'left'}
-                                                                   percents={100 * software.channelCount / max.channelCount}/>
-                                                  </td>
-                                              </tr>
-                                        )
-                                      : (
-                                              <tr key={index}>
-                                                  <td><em>Not recognized</em></td>
-                                                  <td className={'number-cell'}><span>{software.nodeCount}</span></td>
-                                                  <td className={'number-cell'}><span>{software.accountCount}</span>
-                                                  </td>
-                                                  <td className={'number-cell'}><span>{software.channelCount}</span>
-                                                  </td>
-                                              </tr>
-                                        )
-                                  })
-                              }
-                              </tbody>
-                              <tfoot>
-                              <tr>
-                                  <th>Summary</th>
-                                  <th className={'number-cell'}>{sum.nodeCount}</th>
-                                  <th className={'number-cell'}>{sum.accountCount}</th>
-                                  <th className={'number-cell'}>{sum.channelCount}</th>
-                              </tr>
-                              </tfoot>
-                          </>
-                        )
-                    }
-                </Loader>
-            </table>
+            <div className="table-responsive">
+                <table className={'table table-dark table-striped table-bordered stats'}>
+                    <thead>
+                    <tr>
+                        <th>
+                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
+                                Software name
+                            </SortToggle>
+                        </th>
+                        <th className={'text-end'}>
+                            <SortToggle onToggle={toggleSort} field={'nodeCount'} sort={sort}>
+                                Instance count
+                            </SortToggle>
+                        </th>
+                        <th className={'text-end'}>
+                            <SortToggle onToggle={toggleSort} field={'accountCount'} sort={sort}>
+                                Account count
+                            </SortToggle>
+                        </th>
+                        <th className={'text-end'}>
+                            <SortToggle onToggle={toggleSort} field={'channelCount'} sort={sort}>
+                                Channel count
+                            </SortToggle>
+                        </th>
+                    </tr>
+                    </thead>
+                    <Loader loading={loading} hideContent={!loaded} table={4} showTop={true}>
+                        {stats === null
+                          ? (<tr>
+                                <td colSpan={4}><em>Failed to load stats data!</em></td>
+                            </tr>)
+                          : (
+                                <>
+                                    <tbody>
+                                    {
+                                        stats.softwares.map((software, index) => {
+                                          return software.name !== null
+                                            ? (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <SoftwareBadge softwareName={software.name}/>
+                                                        </td>
+                                                        <td className={'text-end'}>
+                                                            <span>{software.nodeCount}</span>
+                                                            <ProgressBar way={'left'}
+                                                                         percents={100 * software.nodeCount / max.nodeCount}/>
+                                                        </td>
+                                                        <td className={'text-end'}>
+                                                            <span>{software.accountCount}</span>
+                                                            <ProgressBar way={'left'}
+                                                                         percents={100 * software.accountCount / max.accountCount}/>
+                                                        </td>
+                                                        <td className={'text-end'}>
+                                                            <span>{software.channelCount}</span>
+                                                            <ProgressBar way={'left'}
+                                                                         percents={100 * software.channelCount / max.channelCount}/>
+                                                        </td>
+                                                    </tr>
+                                              )
+                                            : (
+                                                    <tr key={index}>
+                                                        <td><em>Not recognized</em></td>
+                                                        <td className={'text-end'}><span>{software.nodeCount}</span>
+                                                        </td>
+                                                        <td className={'text-end'}>
+                                                            <span>{software.accountCount}</span>
+                                                        </td>
+                                                        <td className={'text-end'}>
+                                                            <span>{software.channelCount}</span>
+                                                        </td>
+                                                    </tr>
+                                              )
+                                        })
+                                    }
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Summary</th>
+                                        <th className={'text-end'}>{sum.nodeCount}</th>
+                                        <th className={'text-end'}>{sum.accountCount}</th>
+                                        <th className={'text-end'}>{sum.channelCount}</th>
+                                    </tr>
+                                    </tfoot>
+                                </>
+                            )
+                        }
+                    </Loader>
+                </table>
+            </div>
         </Layout>
   )
 }

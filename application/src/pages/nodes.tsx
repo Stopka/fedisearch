@@ -11,10 +11,12 @@ import SoftwareBadge from '../components/badges/SoftwareBadge'
 import SortToggle from '../components/SortToggle'
 import { StatsRequestSortBy } from '../types/StatsRequest'
 import { Sort } from '../types/Sort'
+import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 let source = axios.CancelToken.source()
 
-const Nodes:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
+const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const [query, setQuery] = useState('')
   const [submitted, setSubmitted] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -124,133 +126,132 @@ const Nodes:React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   useEffect(loadNextPageResults, [page])
 
   return (
-      <Layout matomoConfig={matomoConfig}>
-        <Head>
-          <title>{siteTitle}</title>
-        </Head>
-        <h1>Search servers</h1>
-        <form onSubmit={handleSearchSubmit}>
-          <label htmlFor={'query'}>Search on fediverse</label>
-          <input
-              name={'query'}
-              id={'query'}
-              type={'search'}
-              onChange={handleQueryChange}
-              onBlur={handleQueryChange}
-              value={query}
-              placeholder={'Search on fediverse'}
-              autoFocus={true}
-          />
-          <button type={'submit'}>
-            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search"
-                 className="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 512 512">
-              <path fill="currentColor"
-                    d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" />
-              <title>Search</title>
-            </svg>
-            <span>Search</span>
-          </button>
-        </form>
-          <Loader loading={loading} showBottom={true}>
-            {
-              loaded
-                ? (
-                      <table>
-                        <thead>
-                        <tr>
-                          <th rowSpan={2}>
-                            <SortToggle onToggle={toggleSort} field={'domain'} sort={sort}>
-                            Domain
-                          </SortToggle>
-                          </th>
-                          <th rowSpan={2}>
-                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
-                              Software
-                            </SortToggle>
-                          </th>
-                          <th colSpan={3}>User count</th>
-                          <th rowSpan={2} className={'number-cell'}>
-                            <SortToggle onToggle={toggleSort} field={'statusesCount'} sort={sort}>
-                            Statuses
-                          </SortToggle>
-                          </th>
-                          <th rowSpan={2}>
-                            <SortToggle onToggle={toggleSort} field={'openRegistrations'} sort={sort}>
-                              Registrations
-                            </SortToggle>
-                          </th>
-                          <th rowSpan={2}>
-                            <SortToggle onToggle={toggleSort} field={'refreshedAt'} sort={sort}>
-                              Last refreshed
-                            </SortToggle>
-                          </th>
-                        </tr>
-                        <tr>
-                          <th className={'number-cell'}>
-                            <SortToggle onToggle={toggleSort} field={'totalUserCount'} sort={sort}>
-                              Total
-                            </SortToggle>
-                          </th>
-                          <th className={'number-cell'}>
-                            <SortToggle onToggle={toggleSort} field={'monthActiveUserCount'} sort={sort}>
-                              Month active
-                            </SortToggle>
-                          </th>
-                          <th className={'number-cell'}>
-                            <SortToggle onToggle={toggleSort} field={'halfYearActiveUserCount'} sort={sort}>
-                              Half year active
-                            </SortToggle>
-                          </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {results.length
-                          ? results.map((node, index) => {
-                            return (
-                           <tr key={index}>
-                             <td>{node.domain}</td>
-                             <td>
-                               <div title={'Name'}><SoftwareBadge softwareName={node.softwareName}/></div>
-                               <div title={'Version'}>{node.softwareVersion ?? ''}</div></td>
-                             <td className={'number-cell'}>{node.totalUserCount ?? '?'}</td>
-                             <td className={'number-cell'}>{node.monthActiveUserCount ?? '?'}</td>
-                             <td className={'number-cell'}>{node.halfYearActiveUserCount ?? '?'}</td>
-                             <td className={'number-cell'}>{node.statusesCount ?? '?'}</td>
-                             <td>{node.openRegistrations === null ? '?' : (node.openRegistrations ? 'Opened' : 'Closed')}</td>
-                             <td>{node.refreshedAt ? (new Date(node.refreshedAt)).toLocaleDateString() : 'Never'}</td>
-                           </tr>
-                            )
-                          })
-                          : (
-                            <tr>
-                              <td colSpan={9}>No servers found</td>
-                            </tr>
-                            )}
-                        </tbody>
-                      </table>
-                  )
-                : ''
-            }
-          </Loader>
-        {hasMore && !loading
-          ? (
-                <button className={'next-page'} onClick={handleLoadMore}>
-                  <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="angle-double-down"
-                       className="svg-inline--fa fa-angle-double-down fa-w-10" role="img"
-                       xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                    <path fill="currentColor"
-                          d="M143 256.3L7 120.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0L313 86.3c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.4 9.5-24.6 9.5-34 .1zm34 192l136-136c9.4-9.4 9.4-24.6 0-33.9l-22.6-22.6c-9.4-9.4-24.6-9.4-33.9 0L160 352.1l-96.4-96.4c-9.4-9.4-24.6-9.4-33.9 0L7 278.3c-9.4 9.4-9.4 24.6 0 33.9l136 136c9.4 9.5 24.6 9.5 34 .1z"/>
-                  </svg>
-                  <span>Load more</span>
-                </button>
-            )
-          : ''}
-      </Layout>
+        <Layout matomoConfig={matomoConfig}>
+            <Head>
+                <title>{siteTitle}</title>
+            </Head>
+            <h1>Search servers</h1>
+            <form onSubmit={handleSearchSubmit}>
+                <div className={'input-group mb-3'}>
+                    <input
+                        name={'query'}
+                        id={'query'}
+                        type={'search'}
+                        className={'form-control'}
+                        onChange={handleQueryChange}
+                        onBlur={handleQueryChange}
+                        value={query}
+                        placeholder={'Search servers on fediverse'}
+                        autoFocus={true}
+                        aria-label="Search servers on fediverse"
+                        aria-describedby="search-nodes-button"
+                    />
+                    <button type={'submit'} className={'btn btn-primary'} id={'search-nodes-button'}>
+                        <FontAwesomeIcon icon={faSearch}/>
+                        <span>Search</span>
+                    </button>
+                </div>
+            </form>
+            <Loader loading={loading} showBottom={true}>
+                {
+                    loaded
+                      ? (
+                            <div className="table-responsive">
+                                <table className={'table table-dark table-striped table-bordered nodes'}>
+                                    <thead>
+                                    <tr>
+                                        <th rowSpan={2}>
+                                            <SortToggle onToggle={toggleSort} field={'domain'} sort={sort}>
+                                                Domain
+                                            </SortToggle>
+                                        </th>
+                                        <th rowSpan={2}>
+                                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
+                                                Software
+                                            </SortToggle>
+                                        </th>
+                                        <th colSpan={3}>User count</th>
+                                        <th rowSpan={2} className={'number-cell'}>
+                                            <SortToggle onToggle={toggleSort} field={'statusesCount'} sort={sort}>
+                                                Statuses
+                                            </SortToggle>
+                                        </th>
+                                        <th rowSpan={2}>
+                                            <SortToggle onToggle={toggleSort} field={'openRegistrations'} sort={sort}>
+                                                Registrations
+                                            </SortToggle>
+                                        </th>
+                                        <th rowSpan={2}>
+                                            <SortToggle onToggle={toggleSort} field={'refreshedAt'} sort={sort}>
+                                                Last refreshed
+                                            </SortToggle>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className={'text-end'}>
+                                            <SortToggle onToggle={toggleSort} field={'totalUserCount'} sort={sort}>
+                                                Total
+                                            </SortToggle>
+                                        </th>
+                                        <th className={'text-end'}>
+                                            <SortToggle onToggle={toggleSort} field={'monthActiveUserCount'} sort={sort}>
+                                                Month active
+                                            </SortToggle>
+                                        </th>
+                                        <th className={'text-end'}>
+                                            <SortToggle onToggle={toggleSort} field={'halfYearActiveUserCount'} sort={sort}>
+                                                Half year active
+                                            </SortToggle>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {results.length
+                                      ? results.map((node, index) => {
+                                        return (
+                                                <tr key={index}>
+                                                    <td>{node.domain}</td>
+                                                    <td>
+                                                        <div title={'Name'}><SoftwareBadge
+                                                            softwareName={node.softwareName}/></div>
+                                                        <div title={'Version'}>{node.softwareVersion ?? ''}</div>
+                                                    </td>
+                                                    <td className={'text-end'}>{node.totalUserCount ?? '?'}</td>
+                                                    <td className={'text-end'}>{node.monthActiveUserCount ?? '?'}</td>
+                                                    <td className={'text-end'}>{node.halfYearActiveUserCount ?? '?'}</td>
+                                                    <td className={'text-end'}>{node.statusesCount ?? '?'}</td>
+                                                    <td>{node.openRegistrations === null ? '?' : (node.openRegistrations ? 'Opened' : 'Closed')}</td>
+                                                    <td>{node.refreshedAt ? (new Date(node.refreshedAt)).toLocaleDateString() : 'Never'}</td>
+                                                </tr>
+                                        )
+                                      })
+                                      : (
+                                            <tr>
+                                                <td colSpan={9}>No servers found</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
+                      : ''
+                }
+            </Loader>
+            {hasMore && !loading
+              ? (
+                  <div className={'d-flex justify-content-center'}>
+                    <button className={'btn btn-secondary'} onClick={handleLoadMore}>
+                        <FontAwesomeIcon icon={faAngleDoubleDown} className={'margin-right'} />
+                        <span>Load more</span>
+                    </button>
+                  </div>
+                )
+              : ''}
+        </Layout>
   )
 }
 
-export const getServerSideProps:GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   console.info('Loading matomo config', matomoConfig)
   return {
     props: {
