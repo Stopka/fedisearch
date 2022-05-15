@@ -56,8 +56,8 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setResults([])
     setHasMore(false)
     setLoaded(false)
-    router.query = query
-    router.push(router)
+
+    router.push({ query })
 
     if ((query.search ?? '').length < 1) {
       console.info('Query too short.')

@@ -8,23 +8,24 @@ import axios from 'axios'
 import { StatsResponse, statsResponseSchema } from '../types/StatsResponse'
 import SoftwareBadge from '../components/badges/SoftwareBadge'
 import ProgressBar from '../components/ProgressBar'
-import { StatsRequestSortBy } from '../types/StatsRequest'
+import { StatsRequest, statsRequestSchema, StatsRequestSortBy } from '../types/StatsRequest'
 import SortToggle from '../components/SortToggle'
 import getMatomo from '../lib/getMatomo'
-import { Sort } from '../types/Sort'
+import { useRouter } from 'next/router'
 
 let source = axios.CancelToken.source()
 
 const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
+  const router = useRouter()
+  const routerQuery = statsRequestSchema.parse(router.query)
+  console.log('Router query', routerQuery)
+  const [query, setQuery] = useState<StatsRequest>(routerQuery)
   const [loading, setLoading] = useState<boolean>(true)
   const [loaded, setLoaded] = useState<boolean>(false)
   const [stats, setStats] = useState<StatsResponse | null>(null)
-  const [sort, setSort] = useState<Sort>({
-    sortBy: 'nodeCount', sortWay: 'desc'
-  })
 
   const toggleSort = (sortBy: StatsRequestSortBy) => {
-    const sortWay = sort.sortBy === sortBy && sort.sortWay === 'asc' ? 'desc' : 'asc'
+    const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'stats',
       action: 'sort',
@@ -35,19 +36,20 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-    setSort({
-      sortBy: sortBy,
-      sortWay: sortWay
-    })
+    const newQuery:StatsRequest = { ...query }
+    newQuery.sortBy = sortBy
+    newQuery.sortWay = sortWay
+    setQuery(newQuery)
   }
 
   const retrieveStats = async () => {
-    console.info('Retrieving stats', { sort })
+    console.info('Retrieving stats', { query })
     source = axios.CancelToken.source()
     setLoading(true)
+    await router.push({ query })
     try {
       const response = await axios.get('/api/stats', {
-        params: sort,
+        params: query,
         cancelToken: source.token
       })
       const stats = await statsResponseSchema.parseAsync(response.data)
@@ -67,7 +69,7 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   }
   useEffect(() => {
     loadStats()
-  }, [sort])
+  }, [query])
   const sum = {
     nodeCount: 0,
     accountCount: 0,
@@ -101,22 +103,22 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                     <thead>
                     <tr>
                         <th>
-                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
+                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={query}>
                                 Software name
                             </SortToggle>
                         </th>
                         <th className={'text-end'}>
-                            <SortToggle onToggle={toggleSort} field={'nodeCount'} sort={sort}>
+                            <SortToggle onToggle={toggleSort} field={'nodeCount'} sort={query}>
                                 Instance count
                             </SortToggle>
                         </th>
                         <th className={'text-end'}>
-                            <SortToggle onToggle={toggleSort} field={'accountCount'} sort={sort}>
+                            <SortToggle onToggle={toggleSort} field={'accountCount'} sort={query}>
                                 Account count
                             </SortToggle>
                         </th>
                         <th className={'text-end'}>
-                            <SortToggle onToggle={toggleSort} field={'channelCount'} sort={sort}>
+                            <SortToggle onToggle={toggleSort} field={'channelCount'} sort={query}>
                                 Channel count
                             </SortToggle>
                         </th>

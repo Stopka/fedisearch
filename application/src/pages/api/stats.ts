@@ -16,8 +16,6 @@ const CACHE_KEY = 'stats'
 
 const handleGetStats = async (req: NextApiRequest, res: NextApiResponse<StatsResponse>): Promise<void> => {
   const query = await statsRequestSchema.parseAsync(req.query)
-  query.sortBy = query.sortBy ?? 'nodeCount'
-  query.sortWay = query.sortWay ?? 'desc'
   const cacheKey = `${CACHE_KEY}_${query.sortWay}_${query.sortBy}`
   if (!cache.has(cacheKey)) {
     console.info('Retrieving new stats', { cacheKey, query })

@@ -54,8 +54,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   const loadNewQueryResults = () => {
     console.info('Cancelling searches')
     source.cancel('New query on the way')
-    router.query = query
-    router.push(router)
+    router.push({ query })
     setResults([])
     setHasMore(false)
     setLoaded(false)

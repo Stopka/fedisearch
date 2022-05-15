@@ -1,9 +1,18 @@
 import { z } from 'zod'
+import { transform, undefinedToDefault } from '../lib/transform'
 export const statsRequestSortBySchema = z.enum(['nodeCount', 'accountCount', 'channelCount', 'softwareName'])
 export const statsRequestSortWaySchema = z.enum(['asc', 'desc'])
 export const statsRequestSchema = z.object({
-  sortBy: z.optional(statsRequestSortBySchema),
-  sortWay: z.optional(statsRequestSortWaySchema)
+  sortBy: transform(
+    z.optional(statsRequestSortBySchema),
+    undefinedToDefault<StatsRequestSortBy>('accountCount'),
+    z.optional(statsRequestSortBySchema)
+  ),
+  sortWay: transform(
+    z.optional(statsRequestSortWaySchema),
+    undefinedToDefault<StatsRequestSortWay>('desc'),
+    statsRequestSortWaySchema
+  )
 })
 
 export type StatsRequest = z.infer<typeof statsRequestSchema>
