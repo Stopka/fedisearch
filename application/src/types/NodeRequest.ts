@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { preserveUndefined, stringToInt, transform } from '../lib/transform'
+import { preserveUndefined, stringToInt, stringTrimmed, transform, undefinedToDefault } from '../lib/transform'
 
-export const statsRequestSortBySchema = z.enum([
+export const nodeRequestSortBySchema = z.enum([
   'softwareName',
   'softwareVersion',
   'totalUserCount',
@@ -13,15 +13,30 @@ export const statsRequestSortBySchema = z.enum([
   'domain'
 ])
 
-export const statsRequestSortWaySchema = z.enum([
+export const nodeRequestSortWaySchema = z.enum([
   'asc',
   'desc'
 ])
 
-export const nodeRequestSchema = z.object({
-  sortBy: z.optional(statsRequestSortBySchema),
-  sortWay: z.optional(statsRequestSortWaySchema),
-  search: z.string().optional(),
+export const nodeRequestQuerySchema = z.object({
+  sortBy: transform(
+    z.optional(nodeRequestSortBySchema),
+    undefinedToDefault<NodeRequestSortBy>('refreshedAt'),
+    nodeRequestSortBySchema
+  ),
+  sortWay: transform(
+    z.optional(nodeRequestSortWaySchema),
+    undefinedToDefault<NodeRequestSortWay>('desc'),
+    nodeRequestSortWaySchema
+  ),
+  search: transform(
+    z.string().optional(),
+    stringTrimmed,
+    z.string()
+  )
+})
+
+export const nodeRequestSchema = nodeRequestQuerySchema.extend({
   page: transform(
     z.string().optional(),
     preserveUndefined(stringToInt),
@@ -29,4 +44,7 @@ export const nodeRequestSchema = z.object({
   )
 })
 
+export type NodeRequestQuery = z.infer<typeof nodeRequestQuerySchema>
 export type NodeRequest = z.infer<typeof nodeRequestSchema>
+export type NodeRequestSortWay = z.infer<typeof nodeRequestSortWaySchema>
+export type NodeRequestSortBy = z.infer<typeof nodeRequestSortBySchema>

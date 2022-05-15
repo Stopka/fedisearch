@@ -8,9 +8,7 @@ const handleFeedSearch = async (req: NextApiRequest, res: NextApiResponse<NodeRe
   console.info('Searching nodes', { query: req.query })
 
   const nodeRequest = nodeRequestSchema.parse(req.query)
-  const phrases = (nodeRequest.search ?? '').trim().split(/[\s+]+/)
-  nodeRequest.sortBy = nodeRequest.sortBy ?? 'refreshedAt'
-  nodeRequest.sortWay = nodeRequest.sortWay ?? 'desc'
+  const phrases = nodeRequest.search.split(/[\s+]+/)
   const order = {}
   order[nodeRequest.sortBy] = nodeRequest.sortWay
   const nodes = await prisma.node.findMany({

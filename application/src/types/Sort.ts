@@ -1,4 +1,4 @@
 export type Sort = {
-    sortBy: string,
-    sortWay: 'asc' | 'desc'
+    sortBy?: string,
+    sortWay?: 'asc' | 'desc'
 }

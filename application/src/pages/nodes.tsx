@@ -6,27 +6,27 @@ import Layout, { siteTitle } from '../components/Layout'
 import { matomoConfig } from '../lib/matomoConfig'
 import getMatomo from '../lib/getMatomo'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { nodeResponseSchema } from '../types/NodeResponse'
+import { NodeResponseItem, nodeResponseSchema } from '../types/NodeResponse'
 import SoftwareBadge from '../components/badges/SoftwareBadge'
 import SortToggle from '../components/SortToggle'
-import { StatsRequestSortBy } from '../types/StatsRequest'
-import { Sort } from '../types/Sort'
 import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useRouter } from 'next/router'
+import { NodeRequestQuery, nodeRequestQuerySchema, NodeRequestSortBy } from '../types/NodeRequest'
 
 let source = axios.CancelToken.source()
 
 const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
-  const [query, setQuery] = useState('')
-  const [submitted, setSubmitted] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState([])
-  const [page, setPage] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
-  const [loaded, setLoaded] = useState(false)
-  const [sort, setSort] = useState<Sort>({
-    sortBy: 'refreshedAt', sortWay: 'desc'
-  })
+  const router = useRouter()
+  const routerQuery = nodeRequestQuerySchema.parse(router.query)
+  console.log('Router query', routerQuery)
+  const [query, setQuery] = useState<NodeRequestQuery>(routerQuery)
+  const [submitted, setSubmitted] = useState<Date|null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [results, setResults] = useState<NodeResponseItem[]>([])
+  const [page, setPage] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(false)
+  const [loaded, setLoaded] = useState<boolean>(false)
 
   const search = async () => {
     setLoading(true)
@@ -34,7 +34,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
       console.info('Retrieving results', { query, page })
       source = axios.CancelToken.source()
       const response = await axios.get('/api/node', {
-        params: { search: query, page, sortBy: sort.sortBy, sortWay: sort.sortWay },
+        params: { ...query, page },
         cancelToken: source.token
       })
       const responseData = await nodeResponseSchema.parseAsync(response.data)
@@ -54,6 +54,8 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   const loadNewQueryResults = () => {
     console.info('Cancelling searches')
     source.cancel('New query on the way')
+    router.query = query
+    router.push(router)
     setResults([])
     setHasMore(false)
     setLoaded(false)
@@ -86,9 +88,13 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   }
 
   const handleQueryChange = (event) => {
-    const value = event.target.value
-    console.info('Query changed', { query: value })
-    setQuery(value)
+    const targetInput = event.target
+    const value = targetInput.value
+    const name = targetInput.name
+    const newQuery:NodeRequestQuery = { ...query }
+    newQuery[name] = value
+    console.info('Query changed', { name, value })
+    setQuery(newQuery)
     setPage(0)
   }
 
@@ -104,8 +110,8 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setPage(page + 1)
   }
 
-  const toggleSort = (sortBy: StatsRequestSortBy) => {
-    const sortWay = sort.sortBy === sortBy && sort.sortWay === 'asc' ? 'desc' : 'asc'
+  const toggleSort = (sortBy: NodeRequestSortBy) => {
+    const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'nodes',
       action: 'sort',
@@ -116,13 +122,13 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-    setSort({
-      sortBy: sortBy,
-      sortWay: sortWay
-    })
+    const newQuery:NodeRequestQuery = { ...query }
+    newQuery.sortBy = sortBy
+    newQuery.sortWay = sortWay
+    setQuery(newQuery)
   }
 
-  useEffect(loadNewQueryResults, [query, submitted, sort])
+  useEffect(loadNewQueryResults, [query, submitted])
   useEffect(loadNextPageResults, [page])
 
   return (
@@ -134,13 +140,13 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
             <form onSubmit={handleSearchSubmit}>
                 <div className={'input-group mb-3'}>
                     <input
-                        name={'query'}
-                        id={'query'}
+                        name={'search'}
+                        id={'search'}
                         type={'search'}
                         className={'form-control'}
                         onChange={handleQueryChange}
                         onBlur={handleQueryChange}
-                        value={query}
+                        value={query.search}
                         placeholder={'Search servers on fediverse'}
                         autoFocus={true}
                         aria-label="Search servers on fediverse"
@@ -161,45 +167,45 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                     <thead>
                                     <tr>
                                         <th rowSpan={2}>
-                                            <SortToggle onToggle={toggleSort} field={'domain'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'domain'} sort={query}>
                                                 Domain
                                             </SortToggle>
                                         </th>
                                         <th rowSpan={2}>
-                                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'softwareName'} sort={query}>
                                                 Software
                                             </SortToggle>
                                         </th>
                                         <th colSpan={3}>User count</th>
                                         <th rowSpan={2} className={'number-cell'}>
-                                            <SortToggle onToggle={toggleSort} field={'statusesCount'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'statusesCount'} sort={query}>
                                                 Statuses
                                             </SortToggle>
                                         </th>
                                         <th rowSpan={2}>
-                                            <SortToggle onToggle={toggleSort} field={'openRegistrations'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'openRegistrations'} sort={query}>
                                                 Registrations
                                             </SortToggle>
                                         </th>
                                         <th rowSpan={2}>
-                                            <SortToggle onToggle={toggleSort} field={'refreshedAt'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'refreshedAt'} sort={query}>
                                                 Last refreshed
                                             </SortToggle>
                                         </th>
                                     </tr>
                                     <tr>
                                         <th className={'text-end'}>
-                                            <SortToggle onToggle={toggleSort} field={'totalUserCount'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'totalUserCount'} sort={query}>
                                                 Total
                                             </SortToggle>
                                         </th>
                                         <th className={'text-end'}>
-                                            <SortToggle onToggle={toggleSort} field={'monthActiveUserCount'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'monthActiveUserCount'} sort={query}>
                                                 Month active
                                             </SortToggle>
                                         </th>
                                         <th className={'text-end'}>
-                                            <SortToggle onToggle={toggleSort} field={'halfYearActiveUserCount'} sort={sort}>
+                                            <SortToggle onToggle={toggleSort} field={'halfYearActiveUserCount'} sort={query}>
                                                 Half year active
                                             </SortToggle>
                                         </th>

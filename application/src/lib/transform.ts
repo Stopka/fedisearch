@@ -18,6 +18,14 @@ export function preserveNull<Source, Target> (cast: (value:Source)=>Target) {
   }
 }
 
+export function undefinedToDefault<Type> (defaultValue:Type): (value:Type|undefined)=>Type {
+  return (value) => typeof value === 'undefined' ? defaultValue : value
+}
+
+export function stringTrimmed (value: string|undefined): string {
+  return (value ?? '').trim().replace(/^\++|\++$/g, '')
+}
+
 export function stringToInt (value: string): number {
   return parseInt(value)
 }

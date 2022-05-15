@@ -1,8 +1,12 @@
 import { z } from 'zod'
-import { preserveUndefined, stringToInt, transform } from '../lib/transform'
+import { preserveUndefined, stringToInt, stringTrimmed, transform } from '../lib/transform'
 
 export const feedRequestQuerySchema = z.object({
-  search: z.string().optional()
+  search: transform(
+    z.string().optional(),
+    stringTrimmed,
+    z.string()
+  )
   /*
   softwareName: z.string().optional(),
   domain: z.string().optional(),
