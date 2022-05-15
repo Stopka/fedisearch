@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { feedResponseSchema } from '../types/FeedResponse'
+import { FeedResponseItem, feedResponseSchema } from '../types/FeedResponse'
 import Loader from '../components/Loader'
 import FeedResults from '../components/FeedResults'
 import Layout, { siteTitle } from '../components/Layout'
@@ -10,17 +10,22 @@ import getMatomo from '../lib/getMatomo'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
+import { useRouter } from 'next/router'
+import { FeedRequestQuery, feedRequestQuerySchema } from '../types/FeedRequest'
 
 let source = axios.CancelToken.source()
 
 const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
-  const [query, setQuery] = useState('')
-  const [submitted, setSubmitted] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState([])
-  const [page, setPage] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const router = useRouter()
+  const routerQuery = feedRequestQuerySchema.parse(router.query)
+  console.log('Router query', routerQuery)
+  const [query, setQuery] = useState<FeedRequestQuery>(routerQuery)
+  const [submitted, setSubmitted] = useState<Date | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [results, setResults] = useState<FeedResponseItem[]>([])
+  const [page, setPage] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(false)
+  const [loaded, setLoaded] = useState<boolean>(false)
 
   const search = async () => {
     setLoading(true)
@@ -28,7 +33,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
       console.info('Retrieving results', { query, page })
       source = axios.CancelToken.source()
       const response = await axios.get('/api/feed', {
-        params: { search: query, page },
+        params: { ...query, page },
         cancelToken: source.token
       })
       const responseData = await feedResponseSchema.parseAsync(response.data)
@@ -51,7 +56,10 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setResults([])
     setHasMore(false)
     setLoaded(false)
-    if (query.length < 1) {
+    router.query = query
+    router.push(router)
+
+    if ((query.search ?? '').length < 1) {
       console.info('Query too short.')
       return
     }
@@ -84,9 +92,15 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   }
 
   const handleQueryChange = (event) => {
-    const value = event.target.value
-    console.info('Query changed', { query: value })
-    setQuery(value)
+    const inputElement = event.target
+    const value = inputElement.value
+    const name = inputElement.name
+    const newQuery = {
+      ...query
+    }
+    newQuery[name] = value
+    console.info('Query changed', { name, value })
+    setQuery(newQuery)
     setPage(0)
   }
 
@@ -114,12 +128,12 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
             <form onSubmit={handleSearchSubmit}>
                 <div className="input-group mb-3">
                     <input
-                        name={'query'}
-                        id={'query'}
+                        name={'search'}
+                        id={'search'}
                         type={'search'}
                         onChange={handleQueryChange}
                         onBlur={handleQueryChange}
-                        value={query}
+                        value={query.search ?? ''}
                         placeholder={'Search people on Fediverse'}
                         className="form-control"
                         autoFocus={true}
@@ -154,7 +168,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   console.info('Loading matomo config', matomoConfig)
   return {
     props: {

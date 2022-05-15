@@ -8,7 +8,7 @@ const handleFeedSearch = async (req: NextApiRequest, res: NextApiResponse<FeedRe
   console.info('Searching feeds', { query: req.query })
 
   const feedRequest = feedRequestSchema.parse(req.query)
-  const phrases = feedRequest.search.trim().split(/[\s+]+/)
+  const phrases = (feedRequest.search ?? '').trim().replace(/^\++|\++$/g, '').split(/[\s+]+/)
   const feeds = await prisma.feed.findMany({
     where: {
       AND: phrases.map(phrase => {

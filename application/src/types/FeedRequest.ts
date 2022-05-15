@@ -1,13 +1,8 @@
 import { z } from 'zod'
 import { preserveUndefined, stringToInt, transform } from '../lib/transform'
 
-export const feedRequestSchema = z.object({
-  search: z.string(),
-  page: transform(
-    z.string().optional(),
-    preserveUndefined(stringToInt),
-    z.number().gte(0).optional()
-  )
+export const feedRequestQuerySchema = z.object({
+  search: z.string().optional()
   /*
   softwareName: z.string().optional(),
   domain: z.string().optional(),
@@ -40,4 +35,13 @@ export const feedRequestSchema = z.object({
   */
 })
 
+export const feedRequestSchema = feedRequestQuerySchema.extend({
+  page: transform(
+    z.string().optional(),
+    preserveUndefined(stringToInt),
+    z.number().gte(0).optional()
+  )
+})
+
 export type FeedRequest = z.infer<typeof feedRequestSchema>
+export type FeedRequestQuery = z.infer<typeof feedRequestQuerySchema>
