@@ -1,4 +1,4 @@
-FROM node:16-bullseye AS build
+FROM node:18-bullseye AS build
 ENV ELASTIC_URL='http://elastic:9200' \
     ELASTIC_USER='elastic' \
     ELASTIC_PASSWORD='' \
