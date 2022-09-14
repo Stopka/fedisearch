@@ -4,27 +4,47 @@ import { matomoConfig } from '../lib/matomoConfig'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import React, { useEffect, useState } from 'react'
 import Loader from '../components/Loader'
-import axios from 'axios'
-import { StatsResponse, statsResponseSchema } from '../types/StatsResponse'
 import SoftwareBadge from '../components/badges/SoftwareBadge'
 import ProgressBar from '../components/ProgressBar'
-import { StatsRequest, statsRequestSchema, StatsRequestSortBy } from '../types/StatsRequest'
 import SortToggle from '../components/SortToggle'
 import getMatomo from '../lib/getMatomo'
 import { useRouter } from 'next/router'
-
-let source = axios.CancelToken.source()
+import { statsQueryInputSchema, StatsQueryInputType } from '../graphql/common/types/StatsQueryInput'
+import { useQuery } from '@apollo/client'
+import { ListStatsQuery, ListStatsResult } from '../graphql/client/queries/ListStatsQuery'
+import { ListStatsVariables } from '../graphql/common/queries/listStats'
+import { StatsSoringByEnumType } from '../graphql/common/types/StatsSortingByEnum'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const router = useRouter()
-  const routerQuery = statsRequestSchema.parse(router.query)
+  let routerQuery
+  try {
+    routerQuery = statsQueryInputSchema.parse(router.query)
+  } catch (e) {
+    routerQuery = {
+      sortBy: 'nodeCount',
+      sortWay: 'desc'
+    }
+  }
   console.log('Router query', routerQuery)
-  const [query, setQuery] = useState<StatsRequest>(routerQuery)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [loaded, setLoaded] = useState<boolean>(false)
-  const [stats, setStats] = useState<StatsResponse | null>(null)
+  const [query, setQuery] = useState<StatsQueryInputType>(routerQuery)
+  const { loading, error, data } = useQuery<ListStatsResult, ListStatsVariables>(ListStatsQuery, {
+    variables: {
+      query
+    }
+  })
 
-  const toggleSort = (sortBy: StatsRequestSortBy) => {
+  useEffect(() => {
+    router.push({ query })
+    getMatomo(matomoConfig).trackEvent({
+      category: 'stats',
+      action: 'new-search'
+    })
+  }, [query])
+
+  const toggleSort = (sortBy: StatsSoringByEnumType) => {
     const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'stats',
@@ -36,62 +56,36 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-    const newQuery:StatsRequest = { ...query }
-    newQuery.sortBy = sortBy
-    newQuery.sortWay = sortWay
-    setQuery(newQuery)
+    setQuery({
+      ...query,
+      sortBy,
+      sortWay
+    })
   }
 
-  const retrieveStats = async () => {
-    console.info('Retrieving stats', { query })
-    source = axios.CancelToken.source()
-    setLoading(true)
-    await router.push({ query })
-    try {
-      const response = await axios.get('/api/stats', {
-        params: query,
-        cancelToken: source.token
-      })
-      const stats = await statsResponseSchema.parseAsync(response.data)
-      setStats(stats)
-    } catch (err) {
-      setStats(null)
-      console.log(err)
-    }
-    setLoaded(true)
-    setLoading(false)
-  }
-
-  const loadStats = async () => {
-    console.info('Cancelling retrivals')
-    source.cancel('New query on the way')
-    setTimeout(retrieveStats)
-  }
-  useEffect(() => {
-    loadStats()
-  }, [query])
   const sum = {
     nodeCount: 0,
-    accountCount: 0,
-    channelCount: 0
+    accountFeedCount: 0,
+    channelFeedCount: 0
   }
   const max = {
     nodeCount: 0,
-    accountCount: 0,
-    channelCount: 0
+    accountFeedCount: 0,
+    channelFeedCount: 0
   }
-  const softwares = stats === null ? [] : stats.softwares
-  softwares.forEach(software => {
-    if (software.name === null) {
-      return
-    }
-    sum.nodeCount += software.nodeCount
-    sum.accountCount += software.accountCount
-    sum.channelCount += software.channelCount
-    max.nodeCount = Math.max(software.nodeCount, max.nodeCount)
-    max.accountCount = Math.max(software.accountCount, max.accountCount)
-    max.channelCount = Math.max(software.channelCount, max.channelCount)
-  })
+  if (data) {
+    data.listStats.items.forEach(item => {
+      if (item.softwareName === null) {
+        return
+      }
+      sum.nodeCount += item.nodeCount
+      sum.accountFeedCount += item.accountFeedCount
+      sum.channelFeedCount += item.channelFeedCount
+      max.nodeCount = Math.max(item.nodeCount, max.nodeCount)
+      max.accountFeedCount = Math.max(item.accountFeedCount, max.accountFeedCount)
+      max.channelFeedCount = Math.max(item.channelFeedCount, max.channelFeedCount)
+    })
+  }
   return (
         <Layout matomoConfig={matomoConfig}>
             <Head>
@@ -113,32 +107,35 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                             </SortToggle>
                         </th>
                         <th className={'text-end'}>
-                            <SortToggle onToggle={toggleSort} field={'accountCount'} sort={query}>
+                            <SortToggle onToggle={toggleSort} field={'accountFeedCount'} sort={query}>
                                 Account count
                             </SortToggle>
                         </th>
                         <th className={'text-end'}>
-                            <SortToggle onToggle={toggleSort} field={'channelCount'} sort={query}>
+                            <SortToggle onToggle={toggleSort} field={'channelFeedCount'} sort={query}>
                                 Channel count
                             </SortToggle>
                         </th>
                     </tr>
                     </thead>
-                    <Loader loading={loading} hideContent={!loaded} table={4} showTop={true}>
-                        {stats === null
-                          ? (<tr>
-                                <td colSpan={4}><em>Failed to load stats data!</em></td>
-                            </tr>)
+                    <Loader loading={loading} table={4} showTop={true} hideContent={true}>
+                        {!data
+                          ? (
+                                <tbody>
+                                <tr>
+                                    <td colSpan={4}><em>There are no stats so far!</em></td>
+                                </tr>
+                                </tbody>)
                           : (
                                 <>
                                     <tbody>
                                     {
-                                        stats.softwares.map((software, index) => {
-                                          return software.name !== null
+                                        data.listStats.items.map((software, index) => {
+                                          return software.softwareName !== null
                                             ? (
                                                     <tr key={index}>
                                                         <td>
-                                                            <SoftwareBadge softwareName={software.name}/>
+                                                            <SoftwareBadge softwareName={software.softwareName}/>
                                                         </td>
                                                         <td className={'text-end'}>
                                                             <span>{software.nodeCount}</span>
@@ -146,14 +143,14 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                                                          percents={100 * software.nodeCount / max.nodeCount}/>
                                                         </td>
                                                         <td className={'text-end'}>
-                                                            <span>{software.accountCount}</span>
+                                                            <span>{software.accountFeedCount}</span>
                                                             <ProgressBar way={'left'}
-                                                                         percents={100 * software.accountCount / max.accountCount}/>
+                                                                         percents={100 * software.accountFeedCount / max.accountFeedCount}/>
                                                         </td>
                                                         <td className={'text-end'}>
-                                                            <span>{software.channelCount}</span>
+                                                            <span>{software.channelFeedCount}</span>
                                                             <ProgressBar way={'left'}
-                                                                         percents={100 * software.channelCount / max.channelCount}/>
+                                                                         percents={100 * software.channelFeedCount / max.channelFeedCount}/>
                                                         </td>
                                                     </tr>
                                               )
@@ -163,10 +160,10 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                                         <td className={'text-end'}><span>{software.nodeCount}</span>
                                                         </td>
                                                         <td className={'text-end'}>
-                                                            <span>{software.accountCount}</span>
+                                                            <span>{software.accountFeedCount}</span>
                                                         </td>
                                                         <td className={'text-end'}>
-                                                            <span>{software.channelCount}</span>
+                                                            <span>{software.channelFeedCount}</span>
                                                         </td>
                                                     </tr>
                                               )
@@ -177,8 +174,8 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                     <tr>
                                         <th>Summary</th>
                                         <th className={'text-end'}>{sum.nodeCount}</th>
-                                        <th className={'text-end'}>{sum.accountCount}</th>
-                                        <th className={'text-end'}>{sum.channelCount}</th>
+                                        <th className={'text-end'}>{sum.accountFeedCount}</th>
+                                        <th className={'text-end'}>{sum.channelFeedCount}</th>
                                     </tr>
                                     </tfoot>
                                 </>
@@ -186,12 +183,18 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                         }
                     </Loader>
                 </table>
+                {error
+                  ? (<div className={'d-flex justify-content-center'}>
+                        <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
+                        <span>{error.message}</span>
+                    </div>)
+                  : ''}
             </div>
         </Layout>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   console.info('Loading matomo config', matomoConfig)
   return {
     props: {

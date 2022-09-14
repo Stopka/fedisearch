@@ -1,14 +1,14 @@
 FROM node:16-bullseye AS build
-ENV POSTGRES_URL='postgresql://fedisearch:passwd@postgres:5432/fedisearch?schema=public' \
+ENV ELASTIC_URL='http://elastic:9200' \
+    ELASTIC_USER='elastic' \
+    ELASTIC_PASSWORD='' \
     MATOMO_URL='' \
     MATOMO_SITE_ID='' \
     STATS_CACHE_MINUTES=60 \
     TZ='UTC'
 WORKDIR /srv
 COPY application/package*.json ./
-COPY application/prisma ./prisma/
 RUN npm install --frozen-lockfile
-RUN npm run prisma:generate
 COPY application/. .
 RUN npm run build
 

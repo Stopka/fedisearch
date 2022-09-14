@@ -1,20 +1,22 @@
 import React from 'react'
 import FeedResult from './FeedResult'
-import { FeedResponseItem } from '../types/FeedResponse'
+import { FeedResultItem } from '../graphql/client/queries/ListFeedsQuery'
 
-const FeedResults:React.FC<{feeds:FeedResponseItem[]}> = ({ feeds }) => {
+const FeedResults = ({
+  feeds
+}:{ feeds: FeedResultItem[] }) => {
   if (feeds.length === 0) {
     return (
-        <>
-            <p className={'no-results'}>We have no results for your query.</p>
-        </>
+            <>
+                <p className={'no-results'}>We have no results for your query.</p>
+            </>
     )
   }
   return (<div className={'grid'}>
         {
             feeds.map((feed, index) => {
               console.info('feed', feed)
-              return (<FeedResult key={index} feed={feed}/>)
+              return (<FeedResult key={index} feed={feed} />)
             })
         }
     </div>)

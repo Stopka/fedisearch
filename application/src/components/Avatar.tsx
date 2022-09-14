@@ -1,18 +1,13 @@
 import React from 'react'
+import FallbackImage from './FallbackImage'
 
 const Avatar:React.FC<{url:string|null|undefined}> = ({ url }) => {
-  const fallbackImage = '/avatar.svg'
-
-  const handleAvatarImageError = (event) => {
-    event.target.src = fallbackImage
-  }
-
   return (
-      <img
+      <FallbackImage
           className={'avatar'}
-          src={url ?? fallbackImage}
+          src={url}
+          fallbackSrc={'/avatar.svg'}
           alt={'Avatar'}
-          onError={handleAvatarImageError}
       />
   )
 }

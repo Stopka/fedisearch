@@ -1,84 +1,41 @@
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { FeedResponseItem, feedResponseSchema } from '../types/FeedResponse'
 import Loader from '../components/Loader'
 import FeedResults from '../components/FeedResults'
 import Layout, { siteTitle } from '../components/Layout'
 import { matomoConfig } from '../lib/matomoConfig'
-import getMatomo from '../lib/getMatomo'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faAngleDoubleDown, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
-import { FeedRequestQuery, feedRequestQuerySchema } from '../types/FeedRequest'
-
-let source = axios.CancelToken.source()
+import { useQuery } from '@apollo/client'
+import {
+  ListFeedsQuery, ListFeedsResult
+} from '../graphql/client/queries/ListFeedsQuery'
+import getMatomo from '../lib/getMatomo'
+import { feedQueryInputSchema, FeedQueryInputType } from '../graphql/common/types/FeedQueryInput'
+import { ListFeedsVariables } from '../graphql/common/queries/listFeeds'
 
 const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const router = useRouter()
-  const routerQuery = feedRequestQuerySchema.parse(router.query)
-  console.log('Router query', routerQuery)
-  const [query, setQuery] = useState<FeedRequestQuery>(routerQuery)
-  const [submitted, setSubmitted] = useState<Date | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [results, setResults] = useState<FeedResponseItem[]>([])
+  const routerQuery = feedQueryInputSchema.parse(router.query)
   const [page, setPage] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(false)
-  const [loaded, setLoaded] = useState<boolean>(false)
-
-  const search = async () => {
-    setLoading(true)
-    try {
-      console.info('Retrieving results', { query, page })
-      source = axios.CancelToken.source()
-      const response = await axios.get('/api/feed', {
-        params: { ...query, page },
-        cancelToken: source.token
-      })
-      const responseData = await feedResponseSchema.parseAsync(response.data)
-      setHasMore(responseData.hasMore)
-      setResults([
-        ...(page > 0 ? results : []),
-        ...responseData.feeds
-      ])
-      setLoaded(true)
-    } catch (e) {
-      console.warn('Search failed', e)
-      setLoaded(true)
+  const [query, setQuery] = useState<FeedQueryInputType>(routerQuery)
+  const [pageLoading, setPageLoading] = useState<boolean>(false)
+  const { loading, data, error, fetchMore, refetch } = useQuery<ListFeedsResult, ListFeedsVariables>(ListFeedsQuery, {
+    variables: {
+      paging: { page: 0 },
+      query
     }
-    setLoading(false)
-  }
-
-  const loadNewQueryResults = () => {
-    console.info('Cancelling searches')
-    source.cancel('New query on the way')
-    setResults([])
-    setHasMore(false)
-    setLoaded(false)
-
+  })
+  useEffect(() => {
     router.push({ query })
-
-    if ((query.search ?? '').length < 1) {
-      console.info('Query too short.')
-      return
-    }
-    console.info('Loading new query search', { query, page })
-    setLoading(true)
-    setTimeout(search)
     getMatomo(matomoConfig).trackEvent({
       category: 'feeds',
       action: 'new-search'
     })
-  }
-
-  const loadNextPageResults = () => {
-    setHasMore(false)
-    if (page === 0) {
-      return
-    }
-    console.info('Loading next page', { query, page })
-    setTimeout(search)
+  }, [query])
+  useEffect(() => {
     getMatomo(matomoConfig).trackEvent({
       category: 'feeds',
       action: 'next-page',
@@ -89,7 +46,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-  }
+  }, [page])
 
   const handleQueryChange = (event) => {
     const inputElement = event.target
@@ -99,25 +56,36 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
       ...query
     }
     newQuery[name] = value
-    console.info('Query changed', { name, value })
     setQuery(newQuery)
     setPage(0)
   }
 
-  const handleSearchSubmit = event => {
+  const handleSearchSubmit = async (event) => {
     event.preventDefault()
-    setQuery(query)
-    setSubmitted(new Date())
+    setPageLoading(true)
     setPage(0)
+    await refetch({ paging: { page: 0 } })
+    setPageLoading(false)
   }
 
-  const handleLoadMore = event => {
+  const handleLoadMore = async (event) => {
     event.preventDefault()
+    setPageLoading(true)
+    await fetchMore({
+      variables: {
+        paging: { page: page + 1 }
+      },
+      updateQuery: (previousData, { fetchMoreResult }) => {
+        fetchMoreResult.listFeeds.items = [
+          ...previousData.listFeeds.items,
+          ...fetchMoreResult.listFeeds.items
+        ]
+        return fetchMoreResult
+      }
+    })
+    setPageLoading(false)
     setPage(page + 1)
   }
-
-  useEffect(loadNewQueryResults, [query, submitted])
-  useEffect(loadNextPageResults, [page])
 
   return (
         <Layout matomoConfig={matomoConfig}>
@@ -147,14 +115,14 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                 </div>
             </form>
 
-            <Loader loading={loading} showBottom={true}>
+            <Loader loading={loading || pageLoading} showBottom={true}>
                 {
-                    loaded
-                      ? <FeedResults feeds={results}/>
-                      : ''
+                  data && query.search
+                    ? <FeedResults feeds={data.listFeeds.items} />
+                    : ''
                 }
             </Loader>
-            {hasMore && !loading
+            {!loading && !pageLoading && data?.listFeeds?.paging?.hasNext
               ? (
                     <div className={'d-flex justify-content-center'}>
                         <button className={'btn btn-secondary'} onClick={handleLoadMore}>
@@ -164,12 +132,17 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                     </div>
                 )
               : ''}
+            {error
+              ? (<div className={'d-flex justify-content-center'}>
+                      <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
+                      <span>{error.message}</span>
+                </div>)
+              : ''}
         </Layout>
   )
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  console.info('Loading matomo config', matomoConfig)
   return {
     props: {
       matomoConfig

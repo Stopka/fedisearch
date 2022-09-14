@@ -10,12 +10,14 @@ Only fulltext search is currently supported. More precise filtering is planned f
 
 Configuration is done using environmental variables:
 
-| Variable              | Description                                                                                                        | Value example                                                           |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| `POSTGRES_URL`        | Postgres database uri                                                                                              | `postgresql://fedisearch:passwd@postgres:5432/fedisearch?schema=public` |
-| `MATOMO_URL`          | Optional url of Matomo server for collecting usage statistics. Leaving it empty disables collecting analytics.     | `https://matomo.myserver.tld`                                           |
-| `MATOMO_SITE_ID`      | Optional Matomo site id parameter for collecting usage statistics. Leaving it empty disables collecting analytics. | `8`                                                                     |
-| `STATS_CACHE_MINUTES` | Optional number of minutes to cache heavily calculated stats data                                                  | `60`                                                                    |
+| Variable              | Description                                                                                                        | Value example                 |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| `ELASTIC_URL`         | Url address of ElasticSearch server                                                                                | `http://elastic:9200`         |
+| `ELASTIC_USER`        | Username for EalsticSearch server                                                                                  | `elastic`                     |
+| `ELASTIC_PASSWORD`    | Username for EalsticSearch server                                                                                  | empty                         |
+| `MATOMO_URL`          | Optional url of Matomo server for collecting usage statistics. Leaving it empty disables collecting analytics.     | `https://matomo.myserver.tld` |
+| `MATOMO_SITE_ID`      | Optional Matomo site id parameter for collecting usage statistics. Leaving it empty disables collecting analytics. | `8`                           |
+| `STATS_CACHE_MINUTES` | Optional number of minutes to cache heavily calculated stats data                                                  | `60`                          |
 
 ## Deploy
 

@@ -1,79 +1,50 @@
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import Loader from '../components/Loader'
 import Layout, { siteTitle } from '../components/Layout'
 import { matomoConfig } from '../lib/matomoConfig'
 import getMatomo from '../lib/getMatomo'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { NodeResponseItem, nodeResponseSchema } from '../types/NodeResponse'
 import SoftwareBadge from '../components/badges/SoftwareBadge'
 import SortToggle from '../components/SortToggle'
-import { faSearch, faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faAngleDoubleDown, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
-import { NodeRequestQuery, nodeRequestQuerySchema, NodeRequestSortBy } from '../types/NodeRequest'
-
-let source = axios.CancelToken.source()
+import { useQuery } from '@apollo/client'
+import {
+  ListNodesQuery,
+  ListNodesResult
+} from '../graphql/client/queries/ListNodesQuery'
+import { nodeQueryInputSchema, NodeQueryInputType } from '../graphql/common/types/NodeQueryInput'
+import { ListNodesVariables } from '../graphql/common/queries/listNodes'
+import { NodeSoringByEnumType } from '../graphql/common/types/NodeSortingByEnum'
 
 const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const router = useRouter()
-  const routerQuery = nodeRequestQuerySchema.parse(router.query)
+  let routerQuery:NodeQueryInputType
+  try {
+    routerQuery = nodeQueryInputSchema.parse(router.query)
+  } catch (e) {
+    routerQuery = {
+      search: '',
+      sortBy: 'refreshedAt',
+      sortWay: 'desc'
+    }
+  }
   console.log('Router query', routerQuery)
-  const [query, setQuery] = useState<NodeRequestQuery>(routerQuery)
-  const [submitted, setSubmitted] = useState<Date|null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [results, setResults] = useState<NodeResponseItem[]>([])
+  const [query, setQuery] = useState<NodeQueryInputType>(routerQuery)
   const [page, setPage] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(false)
-  const [loaded, setLoaded] = useState<boolean>(false)
-
-  const search = async () => {
-    setLoading(true)
-    try {
-      console.info('Retrieving results', { query, page })
-      source = axios.CancelToken.source()
-      const response = await axios.get('/api/node', {
-        params: { ...query, page },
-        cancelToken: source.token
-      })
-      const responseData = await nodeResponseSchema.parseAsync(response.data)
-      setHasMore(responseData.hasMore)
-      setResults([
-        ...(page > 0 ? results : []),
-        ...responseData.nodes
-      ])
-      setLoaded(true)
-    } catch (e) {
-      console.warn('Search failed', e)
-      setLoaded(true)
+  const [pageLoading, setPageLoading] = useState<boolean>(false)
+  const { loading, error, data, fetchMore, refetch } = useQuery<ListNodesResult, ListNodesVariables>(ListNodesQuery, {
+    variables: {
+      query,
+      paging: {
+        page: 0
+      }
     }
-    setLoading(false)
-  }
+  })
 
-  const loadNewQueryResults = () => {
-    console.info('Cancelling searches')
-    source.cancel('New query on the way')
-    router.push({ query })
-    setResults([])
-    setHasMore(false)
-    setLoaded(false)
-    console.info('Loading new query search', { query, page })
-    setLoading(true)
-    setTimeout(search)
-    getMatomo(matomoConfig).trackEvent({
-      category: 'nodes',
-      action: 'new-search'
-    })
-  }
-
-  const loadNextPageResults = () => {
-    setHasMore(false)
-    if (page === 0) {
-      return
-    }
-    console.info('Loading next page', { query, page })
-    setTimeout(search)
+  useEffect(() => {
     getMatomo(matomoConfig).trackEvent({
       category: 'nodes',
       action: 'next-page',
@@ -84,32 +55,59 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-  }
+  }, [page])
+  useEffect(() => {
+    router.push({ query })
+    getMatomo(matomoConfig).trackEvent({
+      category: 'nodes',
+      action: 'new-search'
+    })
+  }, [query])
 
   const handleQueryChange = (event) => {
     const targetInput = event.target
     const value = targetInput.value
     const name = targetInput.name
-    const newQuery:NodeRequestQuery = { ...query }
+    const newQuery:NodeQueryInputType = { ...query }
     newQuery[name] = value
     console.info('Query changed', { name, value })
     setQuery(newQuery)
     setPage(0)
   }
 
-  const handleSearchSubmit = event => {
+  const handleSearchSubmit = async (event) => {
+    setPageLoading(true)
     event.preventDefault()
     setQuery(query)
-    setSubmitted(new Date())
     setPage(0)
+    await refetch({ paging: { page: 0 } })
+    setPageLoading(false)
   }
 
-  const handleLoadMore = event => {
+  const handleLoadMore = async (event) => {
     event.preventDefault()
     setPage(page + 1)
+    console.info('Loading next page', { query, page })
+    setPageLoading(true)
+    await fetchMore({
+      variables: {
+        paging: { page: page + 1 }
+      },
+      updateQuery: (previousData, { fetchMoreResult }) => {
+        console.log('more', {
+          previousData, fetchMoreResult
+        })
+        fetchMoreResult.listNodes.items = [
+          ...previousData.listNodes.items,
+          ...fetchMoreResult.listNodes.items
+        ]
+        return fetchMoreResult
+      }
+    })
+    setPageLoading(false)
   }
 
-  const toggleSort = (sortBy: NodeRequestSortBy) => {
+  const toggleSort = (sortBy: NodeSoringByEnumType) => {
     const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'nodes',
@@ -121,14 +119,12 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
         }
       ]
     })
-    const newQuery:NodeRequestQuery = { ...query }
-    newQuery.sortBy = sortBy
-    newQuery.sortWay = sortWay
-    setQuery(newQuery)
+    setQuery({
+      ...query,
+      sortBy,
+      sortWay
+    })
   }
-
-  useEffect(loadNewQueryResults, [query, submitted])
-  useEffect(loadNextPageResults, [page])
 
   return (
         <Layout matomoConfig={matomoConfig}>
@@ -157,9 +153,9 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                     </button>
                 </div>
             </form>
-            <Loader loading={loading} showBottom={true}>
+            <Loader loading={loading || pageLoading} showBottom={true}>
                 {
-                    loaded
+                    data
                       ? (
                             <div className="table-responsive">
                                 <table className={'table table-dark table-striped table-bordered nodes'}>
@@ -175,7 +171,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                                 Software
                                             </SortToggle>
                                         </th>
-                                        <th colSpan={3}>User count</th>
+                                        <th colSpan={4}>User count</th>
                                         <th rowSpan={2} className={'number-cell'}>
                                             <SortToggle onToggle={toggleSort} field={'statusesCount'} sort={query}>
                                                 Statuses
@@ -199,6 +195,11 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                             </SortToggle>
                                         </th>
                                         <th className={'text-end'}>
+                                          <SortToggle onToggle={toggleSort} field={'accountFeedCount'} sort={query}>
+                                            Indexed
+                                          </SortToggle>
+                                        </th>
+                                        <th className={'text-end'}>
                                             <SortToggle onToggle={toggleSort} field={'monthActiveUserCount'} sort={query}>
                                                 Month active
                                             </SortToggle>
@@ -211,17 +212,18 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {results.length
-                                      ? results.map((node, index) => {
+                                    {data.listNodes.items.length
+                                      ? data.listNodes.items.map((node, index) => {
                                         return (
                                                 <tr key={index}>
                                                     <td>{node.domain}</td>
                                                     <td>
                                                         <div title={'Name'}><SoftwareBadge
                                                             softwareName={node.softwareName}/></div>
-                                                        <div title={'Version'}>{node.softwareVersion ?? ''}</div>
+                                                        <div title={'Version: ' + node.softwareVersion ?? '?'}>{node.standardizedSoftwareVersion ?? ''}</div>
                                                     </td>
                                                     <td className={'text-end'}>{node.totalUserCount ?? '?'}</td>
+                                                    <td className={'text-end'}>{node.accountFeedCount ?? '0'}</td>
                                                     <td className={'text-end'}>{node.monthActiveUserCount ?? '?'}</td>
                                                     <td className={'text-end'}>{node.halfYearActiveUserCount ?? '?'}</td>
                                                     <td className={'text-end'}>{node.statusesCount ?? '?'}</td>
@@ -242,7 +244,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                       : ''
                 }
             </Loader>
-            {hasMore && !loading
+            {data?.listNodes?.paging?.hasNext && !loading && !pageLoading
               ? (
                   <div className={'d-flex justify-content-center'}>
                     <button className={'btn btn-secondary'} onClick={handleLoadMore}>
@@ -252,11 +254,17 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                   </div>
                 )
               : ''}
+          {error
+            ? (<div className={'d-flex justify-content-center'}>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
+                  <span>{error.message}</span>
+              </div>)
+            : ''}
         </Layout>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   console.info('Loading matomo config', matomoConfig)
   return {
     props: {

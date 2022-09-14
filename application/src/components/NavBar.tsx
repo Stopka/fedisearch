@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import NavItem from './NavItem'
 import { faUser, faServer, faChartPie } from '@fortawesome/free-solid-svg-icons'
+import FallbackImage from './FallbackImage'
 
 const NavBar:React.FC = () => {
   const [showMenu, setShowMenu] = useState<boolean>(false)
@@ -8,7 +9,7 @@ const NavBar:React.FC = () => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark  mb-4">
             <div className="container-fluid">
                 <a className="navbar-brand" href={'/'}>
-                    <img
+                    <FallbackImage
                         src="/fedisearch.svg"
                         alt={'FediSearch logo'}
                         className="d-inline-block align-text-top logo"

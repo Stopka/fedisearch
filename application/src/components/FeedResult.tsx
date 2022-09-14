@@ -6,13 +6,15 @@ import FeedTypeBadge from './badges/FeedTypeBadge'
 import CreatedAtBadge from './badges/CreatedAtBadge'
 import LastPostAtBadge from './badges/LastPostAtBadge'
 import BotBadge from './badges/BotBadge'
-import { FeedResponseField, FeedResponseItem } from '../types/FeedResponse'
 import ParentFeed from './ParentFeed'
 import StatusesCountBadge from './badges/StatusesCountBadge'
 import FollowersBadge from './badges/FollowersBadge'
 import FollowingBadge from './badges/FollowingBadge'
+import { FeedResultItem } from '../graphql/client/queries/ListFeedsQuery'
 
-const FeedResult: React.FC<{ feed: FeedResponseItem }> = ({ feed }) => {
+const FeedResult = ({
+  feed
+}:{ feed: FeedResultItem }) => {
   const fallbackEmojiImage = '/emoji.svg'
 
   const handleEmojiImageError = (event) => {
@@ -39,14 +41,14 @@ const FeedResult: React.FC<{ feed: FeedResponseItem }> = ({ feed }) => {
                 </h3>
                 <Avatar url={feed.avatar}/>
                 <div className={'address'}>
-                    <span>{feed.name}@{feed.node.domain}</span>
-                    <ParentFeed feed={feed.parentFeed}/>
+                    <span>{feed.id}</span>
+                    <ParentFeed feed={feed.parent}/>
                 </div>
                 <SoftwareBadge softwareName={feed.node.softwareName}/>
                 <div className={'badges'}>
                     <FeedTypeBadge type={feed.type}/>
-                    <FollowersBadge followers={feed.followersCount} />
-                    <FollowingBadge following={feed.followingCount} />
+                    <FollowersBadge followers={feed.followersCount}/>
+                    <FollowingBadge following={feed.followingCount}/>
                     <StatusesCountBadge statusesCount={feed.statusesCount}/>
                     <CreatedAtBadge createdAt={feed.createdAt}/>
                     <LastPostAtBadge lastStatusAt={feed.lastStatusAt}/>
@@ -54,24 +56,24 @@ const FeedResult: React.FC<{ feed: FeedResponseItem }> = ({ feed }) => {
                 </div>
                 {feed.fields.length > 0
                   ? (
-                      <div className={'table-responsive fields'}>
-                        <table className={'table'}>
-                            <tbody>
-                            {
-                                feed.fields.map((field: FeedResponseField, index: number): React.ReactNode => {
-                                  return (
-                                        <tr key={index}>
-                                            <th className={'with-emoji table-active'}
-                                                dangerouslySetInnerHTML={{ __html: striptags(field.name, ['a', 'strong', 'em', 'img']) }}/>
-                                            <td className={'with-emoji'}
-                                                dangerouslySetInnerHTML={{ __html: striptags(field.value, ['a', 'strong', 'em', 'img']) }}/>
-                                        </tr>
-                                  )
-                                })
-                            }
-                            </tbody>
-                        </table>
-                      </div>
+                        <div className={'table-responsive fields'}>
+                            <table className={'table'}>
+                                <tbody>
+                                {
+                                    feed.fields.map((field, index: number): React.ReactNode => {
+                                      return (
+                                            <tr key={index}>
+                                                <th className={'with-emoji table-active'}
+                                                    dangerouslySetInnerHTML={{ __html: striptags(field.name, ['a', 'strong', 'em', 'img']) }}/>
+                                                <td className={'with-emoji'}
+                                                    dangerouslySetInnerHTML={{ __html: striptags(field.value, ['a', 'strong', 'em', 'img']) }}/>
+                                            </tr>
+                                      )
+                                    })
+                                }
+                                </tbody>
+                            </table>
+                        </div>
                     )
                   : ''}
                 <div className={'description with-emoji'}

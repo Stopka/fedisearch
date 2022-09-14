@@ -76,6 +76,15 @@ table.stats {
     grid-row: address;
   }
 
+  .parent-feed{
+    position: relative;
+    .avatar{
+      max-width: 3em;
+      float: left;
+      margin-right: 1em;
+    }
+  }
+
   .software-name{
     grid-column: main /end;
     grid-row: software;

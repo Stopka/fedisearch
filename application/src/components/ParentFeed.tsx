@@ -1,9 +1,9 @@
 import React from 'react'
 import Avatar from './Avatar'
-import { FeedResponseParent } from '../types/FeedResponse'
+import { ParentFeedItem } from '../graphql/client/queries/ListFeedsQuery'
 
-const ParentFeed: React.FC<{feed:FeedResponseParent|null}> = ({ feed }) => {
-  if (feed === null) {
+const ParentFeed: React.FC<{feed:ParentFeedItem|null}> = ({ feed }) => {
+  if (!feed) {
     return (<></>)
   }
   return (
