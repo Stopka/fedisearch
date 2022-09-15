@@ -44,11 +44,21 @@ export const Feed = objectType({
         if (!source.parentFeedName || !source.parentFeedDomain) {
           return null
         }
-        const parentFeedResult = await elasticClient.get<FeedSource>({
-          index: feedIndex,
-          id: getFeedId(source.parentFeedName, source.parentFeedDomain)
-        })
-        return parentFeedResult._source
+        const parentId = getFeedId(source.parentFeedName, source.parentFeedDomain)
+        try {
+          const parentFeedResult = await elasticClient.get<FeedSource>({
+            index: feedIndex,
+            id: parentId
+          })
+          return parentFeedResult._source
+        } catch (error) {
+          console.warn('Parent feed not found', {
+            feedId: getFeedId(source.name, source.domain),
+            parentId,
+            error
+          })
+          return null
+        }
       }
     })
     t.nonNull.list.nonNull.field('fields', {

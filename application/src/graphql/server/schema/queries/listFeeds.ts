@@ -56,7 +56,7 @@ export const listFeeds = extendType({
                 {
                   script_score: {
                     script: {
-                      source: "Math.max(1,Math.log(1 + doc['followersCount'].value) / 10 + 1)"
+                      source: "Math.max(1,Math.log(1 + doc['followersCount'].value) / 1 + 1)"
                     }
                   }
                 },
@@ -65,16 +65,20 @@ export const listFeeds = extendType({
                   weight: 0.8
                 },
                 {
-                  filter: { term: { locked: true } },
+                  filter: { range: { followersCount: { lte: 1 } } },
                   weight: 0.1
+                },
+                {
+                  filter: { term: { locked: true } },
+                  weight: 0.05
                 }
               ],
               query: {
                 simple_query_string: {
                   query: prepareSimpleQuery(query.search),
                   fields: [
-                    'name^4',
-                    'domain^4',
+                    'name^3',
+                    'domain^3',
                     'displayName^3',
                     'description^2',
                     'field.value^2',
