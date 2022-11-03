@@ -1,14 +1,20 @@
-import React, { ImgHTMLAttributes, useEffect, useState } from 'react'
-export default function FallbackImage ({ fallbackSrc, src, alt, ...props }: ImgHTMLAttributes<HTMLImageElement>&{fallbackSrc?:string}) {
+import React, { ImgHTMLAttributes, ReactElement, useEffect, useState } from 'react'
+
+export default function FallbackImage ({
+  fallbackSrc,
+  src,
+  alt,
+  ...props
+}: ImgHTMLAttributes<HTMLImageElement> & { fallbackSrc?: string }): ReactElement {
   const [showFallback, setShowFallback] = useState<boolean>(false)
   useEffect(() => {
-    setShowFallback(!src)
+    setShowFallback(src === undefined || src === null || src === '')
   }, [src])
   const handleError = (event): void => {
-    if (props.onError) {
+    if (props.onError != null) {
       props.onError(event)
     }
-    if (!fallbackSrc) {
+    if (fallbackSrc === undefined || fallbackSrc === '') {
       return
     }
     setShowFallback(true)

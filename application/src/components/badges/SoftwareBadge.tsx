@@ -8,8 +8,8 @@ const SoftwareBadge: React.FC<{ softwareName: string | null }> = ({ softwareName
     <FallbackImage className={'icon'}
                    src={softwareName !== null ? `/software/${softwareName}.svg` : fallbackImage}
                    fallbackSrc={fallbackImage}
-                   alt={softwareName}
-                   title={softwareName}
+                   alt={softwareName ?? undefined}
+                   title={softwareName ?? undefined}
     />
     <span className={'value'}>{softwareName}</span>
 </div>)

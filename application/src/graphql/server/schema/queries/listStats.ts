@@ -5,6 +5,7 @@ import { ListStatsVariables } from '../../../common/queries/listStats'
 import nodeIndex from '../../../../lib/storage/Definitions/nodeIndex'
 import { StatsQueryInputType } from '../../../common/types/StatsQueryInput'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getSort = (query: StatsQueryInputType) => {
   switch (query.sortBy) {
     case 'nodeCount':
@@ -30,7 +31,7 @@ export const listStats = extendType({
           default: { sortBy: 'nodeCount', sortWay: 'desc' }
         })
       },
-      resolve: async (event, { query }:ListStatsVariables, { elasticClient }: Context) => {
+      resolve: async (event, { query }: ListStatsVariables, { elasticClient }: Context) => {
         console.info('Searching stats', { query })
 
         const results = await elasticClient.search({
@@ -59,7 +60,7 @@ export const listStats = extendType({
                 sort: {
                   bucket_sort: {
                     sort: [
-                      // @ts-ignore
+                      // @ts-expect-error
                       getSort(query)
                     ]
                   }
@@ -68,16 +69,16 @@ export const listStats = extendType({
             }
           }
         })
-        type Aggregation = {
-          buckets:{
-            key:string,
+        interface Aggregation {
+          buckets: Array<{
+            key: string
             // eslint-disable-next-line camelcase
-            doc_count:number
-            accountFeedCount: {value:number}
-            channelFeedCount: {value:number}
-          }[]
+            doc_count: number
+            accountFeedCount: { value: number }
+            channelFeedCount: { value: number }
+          }>
         }
-        const software = results.aggregations.software as Aggregation
+        const software = results?.aggregations?.software as Aggregation
         return {
           items: software.buckets.map(bucket => {
             return {

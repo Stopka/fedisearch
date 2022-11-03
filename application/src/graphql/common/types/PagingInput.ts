@@ -1,3 +1,3 @@
-export type PagingInputType = {
-    page: number
+export interface PagingInputType {
+  page: number
 }

@@ -3,7 +3,7 @@ import NavItem from './NavItem'
 import { faUser, faServer, faChartPie } from '@fortawesome/free-solid-svg-icons'
 import FallbackImage from './FallbackImage'
 
-const NavBar:React.FC = () => {
+const NavBar: React.FC = () => {
   const [showMenu, setShowMenu] = useState<boolean>(false)
   return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark  mb-4">

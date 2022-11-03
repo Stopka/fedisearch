@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import striptags from 'striptags'
 import Avatar from './Avatar'
 import SoftwareBadge from './badges/SoftwareBadge'
@@ -14,16 +14,16 @@ import { FeedResultItem } from '../graphql/client/queries/ListFeedsQuery'
 
 const FeedResult = ({
   feed
-}:{ feed: FeedResultItem }) => {
+}: { feed: FeedResultItem }): ReactElement => {
   const fallbackEmojiImage = '/emoji.svg'
 
-  const handleEmojiImageError = (event) => {
+  const handleEmojiImageError = (event): void => {
     event.target.src = fallbackEmojiImage
   }
 
   useEffect(() => {
     document.querySelectorAll('.with-emoji img').forEach(element => {
-      if (element.attributes['data-error-handler']) {
+      if (element.attributes['data-error-handler'] === 'attached') {
         return
       }
       element.addEventListener('error', handleEmojiImageError)

@@ -17,10 +17,10 @@ const Loader: React.FC<{ children: ReactNode, loading: boolean, hideContent?: bo
         </div>
   )
 
-  if (table) {
+  if (table !== undefined || table !== 0) {
     return (
             <>
-                {showTop && loading
+                {(showTop ?? false) && loading
                   ? (
                         <tbody>
                         <tr className={className}>
@@ -31,8 +31,8 @@ const Loader: React.FC<{ children: ReactNode, loading: boolean, hideContent?: bo
                         </tbody>
                     )
                   : ''}
-                {hideContent && loading ? '' : children}
-                {showBottom && loading
+                {(hideContent ?? false) && loading ? '' : children}
+                {(showBottom ?? false) && loading
                   ? (
                         <tbody>
                         <tr className={className}>
@@ -50,9 +50,9 @@ const Loader: React.FC<{ children: ReactNode, loading: boolean, hideContent?: bo
   }
   return (
         <>
-            {showTop && loading ? spinner : ''}
-            {hideContent && loading ? '' : children}
-            {showBottom && loading ? spinner : ''}
+            {(showTop ?? false) && loading ? spinner : ''}
+            {(hideContent ?? false) && loading ? '' : children}
+            {(showBottom ?? false) && loading ? spinner : ''}
         </>
   )
 }

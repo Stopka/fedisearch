@@ -1,5 +1,5 @@
 import { StatsQueryInputType } from '../types/StatsQueryInput'
 
-export type ListStatsVariables = {
-    query: StatsQueryInputType
+export interface ListStatsVariables {
+  query: StatsQueryInputType
 }

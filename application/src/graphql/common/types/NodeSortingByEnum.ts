@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const NodeSortingByValues:readonly [string, ...string[]] = [
+export const NodeSortingByValues: readonly [string, ...string[]] = [
   'domain',
   'softwareName',
   'totalUserCount',
@@ -14,4 +14,4 @@ export const NodeSortingByValues:readonly [string, ...string[]] = [
 
 export const nodeSortingBySchema = z.enum(NodeSortingByValues)
 
-export type NodeSoringByEnumType = z.infer<typeof nodeSortingBySchema>;
+export type NodeSoringByEnumType = z.infer<typeof nodeSortingBySchema>

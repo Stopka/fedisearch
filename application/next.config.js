@@ -15,5 +15,8 @@ module.exports = {
         permanent: true
       }
     ]
+  },
+  typescript: {
+    tsconfigPath: '../tsconfig.json'
   }
 }

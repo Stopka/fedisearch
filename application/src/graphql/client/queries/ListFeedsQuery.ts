@@ -57,56 +57,57 @@ export const ListFeedsQuery = gql`
     }
 `
 
-export type ParentFeedItem = {
-    id: string,
-    avatar: string,
-    displayName: string
+export interface ParentFeedItem {
+  id: string
+  avatar: string
+  displayName: string
+  name: string
+  domain: string
+  url: string
+}
+
+export interface FeedResultItem {
+  id: string
+  avatar: string
+  displayName: string
+  foundAt: string
+  bot: boolean
+  createdAt: string
+  description: string
+  followersCount: number
+  followingCount: number
+  lastStatusAt: string
+  locked: boolean
+  name: string
+  refreshedAt: string
+  statusesCount: number
+  type: 'account' | 'channel'
+  url: string
+  fields: Array<{
     name: string
+    value: string
+  }>
+  node: {
     domain: string
-    url:string
+    foundAt: string
+    geoip: {
+      // eslint-disable-next-line camelcase
+      city_name: string
+      // eslint-disable-next-line camelcase
+      country_iso_code: string
+    }
+    halfYearActiveUserCount: number
+    id: string
+    monthActiveUserCount: number
+    name: string
+    openRegistrations: boolean
+    refreshAttemptedAt: string
+    refreshedAt: string
+    softwareName: string
+  }
+  parent: ParentFeedItem | null
 }
 
-export type FeedResultItem = {
-    id: string,
-    avatar: string,
-    displayName: string,
-    foundAt: string,
-    bot: boolean,
-    createdAt: string,
-    description: string,
-    followersCount: number,
-    followingCount: number,
-    lastStatusAt: string,
-    locked: boolean,
-    name: string,
-    refreshedAt: string,
-    statusesCount: number,
-    type: 'account' | 'channel'
-    url: string,
-    fields: {
-        name: string, value: string
-    }[],
-    node: {
-        domain: string,
-        foundAt: string,
-        geoip: {
-            // eslint-disable-next-line camelcase
-            city_name: string,
-            // eslint-disable-next-line camelcase
-            country_iso_code: string,
-        },
-        halfYearActiveUserCount: number,
-        id: string,
-        monthActiveUserCount: number,
-        name: string,
-        openRegistrations: boolean,
-        refreshAttemptedAt: string,
-        refreshedAt: string,
-        softwareName: string
-    },
-    parent: ParentFeedItem|null
-}
-
-export type ListFeedsResult = {
-    listFeeds: List<FeedResultItem>
+export interface ListFeedsResult {
+  listFeeds: List<FeedResultItem>
 }

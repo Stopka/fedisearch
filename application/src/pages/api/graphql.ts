@@ -8,7 +8,7 @@ const graphqlServer = createGraphqlServer()
 
 const startedServer = graphqlServer.start()
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) :Promise<void> => {
+const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   if (req.method === 'OPTIONS') {
     res.end()
     return

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const NavItem:FC<{path:string, label:string, icon:IconProp}> = ({ path, label, icon }) => {
+const NavItem: FC<{ path: string, label: string, icon: IconProp }> = ({ path, label, icon }) => {
   const router = useRouter()
   const active = router.pathname === path
   return (

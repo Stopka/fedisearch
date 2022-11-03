@@ -3,7 +3,7 @@ import resolvers from './resolvers'
 import schema from './schema'
 import { createContext } from './context'
 
-export default function createGraphqlServer () {
+export default function createGraphqlServer (): ApolloServer {
   return new ApolloServer({
     schema,
     resolvers,

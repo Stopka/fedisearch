@@ -1,4 +1,4 @@
-export type Sort = {
-    sortBy?: string,
-    sortWay?: 'asc' | 'desc'
+export interface Sort {
+  sortBy?: string
+  sortWay?: 'asc' | 'desc'
 }

@@ -21,7 +21,7 @@ export const listNodes = extendType({
           default: { default: '', sortBy: 'refreshedAt', sortWay: 'desc' }
         })
       },
-      resolve: async (event, { paging, query }:ListNodesVariables, { elasticClient, defaultPaging }: Context) => {
+      resolve: async (event, { paging, query }: ListNodesVariables, { elasticClient, defaultPaging }: Context) => {
         console.info('Searching nodes', { paging, query })
 
         const results = await elasticClient.search<Node>({

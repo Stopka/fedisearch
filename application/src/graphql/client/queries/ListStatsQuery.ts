@@ -14,13 +14,13 @@ export const ListStatsQuery = gql`
     }
 `
 
-export type StatsResultItem = {
-    softwareName: string,
-    nodeCount: number,
-    accountFeedCount: number,
-    channelFeedCount: number
+export interface StatsResultItem {
+  softwareName: string
+  nodeCount: number
+  accountFeedCount: number
+  channelFeedCount: number
 }
 
-export type ListStatsResult = {
-    listStats: List<StatsResultItem>;
+export interface ListStatsResult {
+  listStats: List<StatsResultItem>
 }

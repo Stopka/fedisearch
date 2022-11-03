@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import FeedResult from './FeedResult'
 import { FeedResultItem } from '../graphql/client/queries/ListFeedsQuery'
 
 const FeedResults = ({
   feeds
-}:{ feeds: FeedResultItem[] }) => {
+}: { feeds: FeedResultItem[] }): ReactElement => {
   if (feeds.length === 0) {
     return (
             <>

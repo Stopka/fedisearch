@@ -3,7 +3,6 @@ import { join } from 'path'
 import * as types from './types'
 import * as queries from './queries'
 // eslint-disable-next-line no-unused-vars
-import * as elastic from './sources/elastic'
 
 const schema = makeSchema({
   types: {

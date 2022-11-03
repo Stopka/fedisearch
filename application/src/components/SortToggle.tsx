@@ -4,8 +4,8 @@ import { faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const SortToggle: React.FC<{
-  onToggle:(StatsRequestSortBy)=>void,
-  field:string,
+  onToggle: (StatsRequestSortBy) => void
+  field: string
   sort: Sort
 }> = ({ onToggle, field, sort, children }) => {
   return (

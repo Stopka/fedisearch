@@ -2,7 +2,7 @@ import React from 'react'
 import Badge from './Badge'
 import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
 
-const LastPostAtBadge:React.FC<{ lastStatusAt: string | null }> = ({ lastStatusAt }) => {
+const LastPostAtBadge: React.FC<{ lastStatusAt: string | null }> = ({ lastStatusAt }) => {
   return (
       <Badge faIcon={faCalendarCheck}
              label={'Last status at'}

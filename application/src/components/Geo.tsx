@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function getFlagEmoji (countryCode:string):string {
+export function getFlagEmoji (countryCode: string): string {
   const codePoints = countryCode
     .toUpperCase()
     .split('')
@@ -8,18 +8,28 @@ export function getFlagEmoji (countryCode:string):string {
   return String.fromCodePoint(...codePoints)
 }
 
-export interface GeoParams{
-    countryCode?: string,
-    countryName?:string,
-    city?: string
+export interface GeoParams {
+  countryCode?: string
+  countryName?: string
+  city?: string
 }
 
-export default function Geo ({ countryCode, countryName, city }:GeoParams):React.ReactElement|null {
-  if (!countryCode && !city) {
+export default function Geo ({ countryCode, countryName, city }: GeoParams): React.ReactElement | null {
+  const alignedCountryCode = countryCode ?? ''
+  const alignedCity = city ?? ''
+  if (alignedCountryCode === '' && alignedCity === '') {
     return null
   }
   return <div className={'geo'}>
-      {city ? <span className={'city'}>{city}</span> : ''}
-      {countryCode ? <span className={'country'} title={`${countryName ?? countryCode}`}>{getFlagEmoji(countryCode)}</span> : ''}
+      {
+          alignedCity !== ''
+            ? <span className={'city'}>{alignedCity}</span>
+            : ''
+      }
+      {
+          alignedCountryCode !== ''
+            ? <span className={'country'} title={`${countryName ?? alignedCountryCode}`}>{getFlagEmoji(alignedCountryCode)}</span>
+            : ''
+      }
     </div>
 }

@@ -37,14 +37,14 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
   })
 
   useEffect(() => {
-    router.push({ query })
+    void router.push({ query })
     getMatomo(matomoConfig).trackEvent({
       category: 'stats',
       action: 'new-search'
     })
   }, [query])
 
-  const toggleSort = (sortBy: StatsSoringByEnumType) => {
+  const toggleSort = (sortBy: StatsSoringByEnumType): void => {
     const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'stats',
@@ -73,7 +73,7 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     accountFeedCount: 0,
     channelFeedCount: 0
   }
-  if (data) {
+  if (data != null) {
     data.listStats.items.forEach(item => {
       if (item.softwareName === null) {
         return
@@ -119,7 +119,7 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                     </tr>
                     </thead>
                     <Loader loading={loading} table={4} showTop={true} hideContent={true}>
-                        {!data
+                        {(data == null)
                           ? (
                                 <tbody>
                                 <tr>
@@ -183,7 +183,7 @@ const Stats: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                         }
                     </Loader>
                 </table>
-                {error
+                {(error != null)
                   ? (<div className={'d-flex justify-content-center'}>
                         <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
                         <span>{error.message}</span>

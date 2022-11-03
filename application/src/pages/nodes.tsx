@@ -21,7 +21,7 @@ import { NodeSoringByEnumType } from '../graphql/common/types/NodeSortingByEnum'
 
 const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
   const router = useRouter()
-  let routerQuery:NodeQueryInputType
+  let routerQuery: NodeQueryInputType
   try {
     routerQuery = nodeQueryInputSchema.parse(router.query)
   } catch (e) {
@@ -56,26 +56,26 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
       ]
     })
   }, [page])
-  useEffect(() => {
-    router.push({ query })
+  useEffect((): void => {
+    void router.push({ query })
     getMatomo(matomoConfig).trackEvent({
       category: 'nodes',
       action: 'new-search'
     })
   }, [query])
 
-  const handleQueryChange = (event) => {
+  const handleQueryChange = (event): void => {
     const targetInput = event.target
     const value = targetInput.value
     const name = targetInput.name
-    const newQuery:NodeQueryInputType = { ...query }
+    const newQuery: NodeQueryInputType = { ...query }
     newQuery[name] = value
     console.info('Query changed', { name, value })
     setQuery(newQuery)
     setPage(0)
   }
 
-  const handleSearchSubmit = async (event) => {
+  const handleSearchSubmit = async (event): Promise<void> => {
     setPageLoading(true)
     event.preventDefault()
     setQuery(query)
@@ -84,7 +84,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setPageLoading(false)
   }
 
-  const handleLoadMore = async (event) => {
+  const handleLoadMore = async (event): Promise<void> => {
     event.preventDefault()
     setPage(page + 1)
     console.info('Loading next page', { query, page })
@@ -107,7 +107,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setPageLoading(false)
   }
 
-  const toggleSort = (sortBy: NodeSoringByEnumType) => {
+  const toggleSort = (sortBy: NodeSoringByEnumType): void => {
     const sortWay = query.sortBy === sortBy && query.sortWay === 'asc' ? 'desc' : 'asc'
     getMatomo(matomoConfig).trackEvent({
       category: 'nodes',
@@ -155,7 +155,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
             </form>
             <Loader loading={loading || pageLoading} showBottom={true}>
                 {
-                    data
+                    (data != null)
                       ? (
                             <div className="table-responsive">
                                 <table className={'table table-dark table-striped table-bordered nodes'}>
@@ -212,7 +212,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {data.listNodes.items.length
+                                    {(data.listNodes.items.length > 0)
                                       ? data.listNodes.items.map((node, index) => {
                                         return (
                                                 <tr key={index}>
@@ -228,7 +228,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                                                     <td className={'text-end'}>{node.halfYearActiveUserCount ?? '?'}</td>
                                                     <td className={'text-end'}>{node.statusesCount ?? '?'}</td>
                                                     <td>{node.openRegistrations === null ? '?' : (node.openRegistrations ? 'Opened' : 'Closed')}</td>
-                                                    <td>{node.refreshedAt ? (new Date(node.refreshedAt)).toLocaleDateString() : 'Never'}</td>
+                                                    <td>{node.refreshedAt !== '' ? (new Date(node.refreshedAt)).toLocaleDateString() : 'Never'}</td>
                                                 </tr>
                                         )
                                       })
@@ -244,7 +244,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                       : ''
                 }
             </Loader>
-            {data?.listNodes?.paging?.hasNext && !loading && !pageLoading
+            {!loading && !pageLoading && data?.listNodes?.paging?.hasNext !== undefined && data?.listNodes?.paging?.hasNext
               ? (
                   <div className={'d-flex justify-content-center'}>
                     <button className={'btn btn-secondary'} onClick={handleLoadMore}>
@@ -254,7 +254,7 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                   </div>
                 )
               : ''}
-          {error
+          {(error != null)
             ? (<div className={'d-flex justify-content-center'}>
                   <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
                   <span>{error.message}</span>

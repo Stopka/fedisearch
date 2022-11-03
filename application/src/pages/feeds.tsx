@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Loader from '../components/Loader'
 import FeedResults from '../components/FeedResults'
 import Layout, { siteTitle } from '../components/Layout'
@@ -16,7 +16,7 @@ import getMatomo from '../lib/getMatomo'
 import { feedQueryInputSchema, FeedQueryInputType } from '../graphql/common/types/FeedQueryInput'
 import { ListFeedsVariables } from '../graphql/common/queries/listFeeds'
 
-const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }) => {
+const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }): ReactElement => {
   const router = useRouter()
   const routerQuery = feedQueryInputSchema.parse(router.query)
   const [page, setPage] = useState<number>(0)
@@ -28,8 +28,9 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
       query
     }
   })
-  useEffect(() => {
+  useEffect((): void => {
     router.push({ query })
+      .catch((error) => console.error(error))
     getMatomo(matomoConfig).trackEvent({
       category: 'feeds',
       action: 'new-search'
@@ -48,7 +49,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     })
   }, [page])
 
-  const handleQueryChange = (event) => {
+  const handleQueryChange = (event): void => {
     const inputElement = event.target
     const value = inputElement.value
     const name = inputElement.name
@@ -60,7 +61,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setPage(0)
   }
 
-  const handleSearchSubmit = async (event) => {
+  const handleSearchSubmit = async (event): Promise<void> => {
     event.preventDefault()
     setPageLoading(true)
     setPage(0)
@@ -68,7 +69,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     setPageLoading(false)
   }
 
-  const handleLoadMore = async (event) => {
+  const handleLoadMore = async (event): Promise<void> => {
     event.preventDefault()
     setPageLoading(true)
     await fetchMore({
@@ -117,12 +118,12 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 
             <Loader loading={loading || pageLoading} showBottom={true}>
                 {
-                  data && query.search
-                    ? <FeedResults feeds={data.listFeeds.items} />
-                    : ''
+                    (data != null) && query.search.length > 0
+                      ? <FeedResults feeds={data.listFeeds.items}/>
+                      : ''
                 }
             </Loader>
-            {!loading && !pageLoading && data?.listFeeds?.paging?.hasNext
+            {!loading && !pageLoading && data?.listFeeds?.paging?.hasNext !== undefined && data?.listFeeds?.paging?.hasNext
               ? (
                     <div className={'d-flex justify-content-center'}>
                         <button className={'btn btn-secondary'} onClick={handleLoadMore}>
@@ -132,10 +133,10 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                     </div>
                 )
               : ''}
-            {error
+            {(error != null)
               ? (<div className={'d-flex justify-content-center'}>
-                      <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
-                      <span>{error.message}</span>
+                    <FontAwesomeIcon icon={faExclamationTriangle} className={'margin-right'}/>
+                    <span>{error.message}</span>
                 </div>)
               : ''}
         </Layout>

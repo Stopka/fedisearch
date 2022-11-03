@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ProgressBar: React.FC<{ percents: number, way?: 'left' | 'right' | 'top' | 'bottom', color?:string }> = ({ percents, way, color }) => {
+const ProgressBar: React.FC<{ percents: number, way?: 'left' | 'right' | 'top' | 'bottom', color?: string }> = ({ percents, way, color }) => {
   way = way ?? 'right'
   percents = Math.round(percents)
   color = color ?? 'var(--accent-color)'

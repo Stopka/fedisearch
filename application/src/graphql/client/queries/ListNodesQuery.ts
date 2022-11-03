@@ -32,30 +32,30 @@ export const ListNodesQuery = gql`
     }
 `
 
-export type NodeResultItem = {
-    domain: string,
-    foundAt: string,
-    geoip: {
-        // eslint-disable-next-line camelcase
-        city_name: string,
-        // eslint-disable-next-line camelcase
-        country_iso_code: string,
-    },
-    halfYearActiveUserCount: number,
-    id: string,
-    monthActiveUserCount: number,
-    name: string,
-    openRegistrations: boolean,
-    refreshAttemptedAt: string,
-    refreshedAt: string,
-    softwareName: string,
-    softwareVersion: string,
-    standardizedSoftwareVersion:string,
-    totalUserCount: number,
-    statusesCount: number,
-    accountFeedCount: number
+export interface NodeResultItem {
+  domain: string
+  foundAt: string
+  geoip: {
+    // eslint-disable-next-line camelcase
+    city_name: string
+    // eslint-disable-next-line camelcase
+    country_iso_code: string
+  }
+  halfYearActiveUserCount: number
+  id: string
+  monthActiveUserCount: number
+  name: string
+  openRegistrations: boolean
+  refreshAttemptedAt: string
+  refreshedAt: string
+  softwareName: string
+  softwareVersion: string
+  standardizedSoftwareVersion: string
+  totalUserCount: number
+  statusesCount: number
+  accountFeedCount: number
 }
 
-export type ListNodesResult = {
-    listNodes: List<NodeResultItem>;
+export interface ListNodesResult {
+  listNodes: List<NodeResultItem>
 }

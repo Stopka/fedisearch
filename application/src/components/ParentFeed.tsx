@@ -2,8 +2,8 @@ import React from 'react'
 import Avatar from './Avatar'
 import { ParentFeedItem } from '../graphql/client/queries/ListFeedsQuery'
 
-const ParentFeed: React.FC<{feed:ParentFeedItem|null}> = ({ feed }) => {
-  if (!feed) {
+const ParentFeed: React.FC<{ feed: ParentFeedItem | null }> = ({ feed }) => {
+  if (feed == null) {
     return (<></>)
   }
   return (
