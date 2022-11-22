@@ -35,13 +35,15 @@ const OptOut: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> =
 
                 <li>
                     If you are a server maintainer, you can disable crawling of your instance using <em>robots.txt</em>.
-                    Just expose a textfile on your instance&apos;s domain, on path <em>https://&lt;your instace&apos;s domain&gt;/robots.txt</em><br/><br/>
+                    Just expose a textfile on your instance&apos;s domain, on path <br/>
+                    <em>https://&lt;your instace&apos;s domain&gt;/robots.txt</em> with the following content:<br/><br/>
                     <pre><code>
                         User-agent: FediCrawl/1.0<br/>
                         Disallow: /
                     </code></pre>
                 </li>
             </ul>
+            <p>It can take up to 3 weeks for the change to be processed</p>
         </Layout>
   )
 }
