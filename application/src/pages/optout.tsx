@@ -30,7 +30,7 @@ const OptOut: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> =
                     Head to <em>Preferences</em>➡<em>Preferences</em> and uncheck the option labeled as <em>Suggest account to others</em>
                 </li>
                 <li>
-                    You can add <strong>#noindex</strong> tag to your profile description
+                    You can add <strong>#nobot</strong> tag to your profile description
                 </li>
 
                 <li>
