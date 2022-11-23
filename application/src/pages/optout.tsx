@@ -43,7 +43,7 @@ const OptOut: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> =
                     </code></pre>
                 </li>
             </ul>
-            <p>It can take up to 3 weeks for the change to be processed</p>
+            <p>It can take up to 3 weeks for the change to be processed and to records be deleted from the index.</p>
         </Layout>
   )
 }
