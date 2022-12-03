@@ -140,7 +140,6 @@ const Nodes: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                         type={'search'}
                         className={'form-control'}
                         onChange={handleQueryChange}
-                        onBlur={handleQueryChange}
                         value={query.search}
                         placeholder={'Search servers on fediverse'}
                         autoFocus={true}

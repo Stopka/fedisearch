@@ -16,7 +16,7 @@ import getMatomo from '../lib/getMatomo'
 import { feedQueryInputSchema, FeedQueryInputType } from '../graphql/common/types/FeedQueryInput'
 import { ListFeedsVariables } from '../graphql/common/queries/listFeeds'
 
-const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ matomoConfig }): ReactElement => {
+export default function Feeds ({ matomoConfig }: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement {
   const router = useRouter()
   const routerQuery = feedQueryInputSchema.parse(router.query)
   const [page, setPage] = useState<number>(0)
@@ -59,6 +59,7 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
     newQuery[name] = value
     setQuery(newQuery)
     setPage(0)
+    event.preventDefault()
   }
 
   const handleSearchSubmit = async (event): Promise<void> => {
@@ -101,7 +102,6 @@ const Feeds: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = 
                         id={'search'}
                         type={'search'}
                         onChange={handleQueryChange}
-                        onBlur={handleQueryChange}
                         value={query.search ?? ''}
                         placeholder={'Search people on Fediverse'}
                         className="form-control"
@@ -150,5 +150,3 @@ export const getServerSideProps: GetServerSideProps = async () => {
     }
   }
 }
-
-export default Feeds
