@@ -1,0 +1,4 @@
+fragment ListNodesGeoIp on GeoIp{
+    city_name,
+    country_iso_code
+}

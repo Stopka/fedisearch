@@ -1,11 +1,4 @@
 FROM node:18-bullseye AS prebuild
-ENV ELASTIC_URL='http://elastic:9200' \
-    ELASTIC_USER='elastic' \
-    ELASTIC_PASSWORD='' \
-    MATOMO_URL='' \
-    MATOMO_SITE_ID='' \
-    STATS_CACHE_MINUTES=60 \
-    TZ='UTC'
 FROM prebuild AS build
 WORKDIR /srv
 COPY application/package*.json ./

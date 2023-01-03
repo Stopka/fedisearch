@@ -1,4 +1,8 @@
-module.exports = {
+const config = {
+  experimental: {
+    appDir: true,
+    esmExternals: true
+  },
   webpack (config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -20,3 +24,5 @@ module.exports = {
     tsconfigPath: '../tsconfig.json'
   }
 }
+
+export default config

@@ -1,0 +1,10 @@
+query ListFeeds($paging: PagingInput!, $query: FeedQueryInput!) {
+    listFeeds(paging: $paging,query: $query){
+        paging {
+            ...Paging
+        },
+        items {
+            ...ListFeedsItem
+        }
+    }
+}

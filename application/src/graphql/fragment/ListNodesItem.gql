@@ -1,0 +1,21 @@
+fragment ListNodesItem on Node{
+    domain,
+    foundAt,
+    geoip {
+        ...ListNodesGeoIp
+    },
+    halfYearActiveUserCount,
+    id,
+    monthActiveUserCount,
+    accountFeedCount,
+    name,
+    openRegistrations,
+    refreshAttemptedAt,
+    refreshedAt,
+    serverIps,
+    softwareName,
+    softwareVersion,
+    standardizedSoftwareVersion,
+    statusesCount,
+    totalUserCount
+}

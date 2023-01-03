@@ -1,0 +1,15 @@
+fragment ListFeedsNode on Node{
+    domain,
+    foundAt,
+    geoip {
+        ...ListNodesGeoIp
+    },
+    halfYearActiveUserCount,
+    id,
+    monthActiveUserCount,
+    name,
+    openRegistrations,
+    refreshAttemptedAt,
+    refreshedAt,
+    softwareName
+}

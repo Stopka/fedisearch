@@ -1,0 +1,8 @@
+fragment StatsAggregations on StatsAggregations{
+    sum {
+        ...StatsAggregation
+    }
+    max {
+        ...StatsAggregation
+    }
+}

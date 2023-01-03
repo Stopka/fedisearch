@@ -1,3 +1,4 @@
+'use client'
 import React, { ImgHTMLAttributes, ReactElement, useEffect, useState } from 'react'
 
 export default function FallbackImage ({

@@ -1,0 +1,3 @@
+fragment Paging on Paging{
+    hasNext
+}

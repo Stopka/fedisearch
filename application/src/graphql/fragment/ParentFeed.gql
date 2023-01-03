@@ -1,0 +1,8 @@
+fragment ParentFeed on Feed{
+    id,
+    avatar,
+    displayName
+    name,
+    domain,
+    url
+}

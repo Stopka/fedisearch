@@ -1,0 +1,6 @@
+fragment StatsItem on Stats{
+    softwareName
+    nodeCount
+    accountFeedCount
+    channelFeedCount
+}

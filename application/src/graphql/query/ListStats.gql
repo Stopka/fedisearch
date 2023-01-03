@@ -1,0 +1,10 @@
+query ListStats($query: StatsQueryInput!) {
+    listStats(query:$query) {
+        items {
+            ...StatsItem
+        }
+        aggregations {
+            ...StatsAggregations
+        }
+    }
+}

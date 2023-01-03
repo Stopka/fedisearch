@@ -1,0 +1,192 @@
+scalar DateTime
+
+type Feed {
+    id: ID!
+    domain: String!
+    foundAt: DateTime!
+    refreshedAt: DateTime
+    name: String!
+    displayName: String!
+    description: String!
+    followersCount: Int
+    followingCount: Int
+    statusesCount: Int
+    lastStatusAt: DateTime
+    createdAt: DateTime
+    bot: Boolean
+    locked: Boolean!
+    url: String!
+    avatar: String
+    type: FeedTypeEnum!
+    parent: Feed
+    fields: [Field!]!
+    node: Node!
+}
+
+input FeedIdentityInput {
+    name: String!
+    nodeDomain: String!
+}
+
+input FeedInput {
+    name: String!
+    displayName: String!
+    description: String!
+    followersCount: Int!
+    followingCount: Int!
+    statusesCount: Int
+    bot: Boolean
+    url: String!
+    avatar: String
+    locked: Boolean!
+    lastStatusAt: DateTime
+    createdAt: DateTime!
+    fields: [FieldInput!]!
+    type: FeedTypeEnum!
+    parentFeed: FeedIdentityInput
+    tags: [String!]!
+    emails: [String!]!
+}
+
+type FeedList {
+    paging: Paging!
+    items: [Feed!]!
+}
+
+input FeedQueryInput {
+    search: String! = ""
+}
+
+enum FeedTypeEnum {
+    account
+    channel
+}
+
+type Field {
+    name: String!
+    value: String!
+}
+
+input FieldInput {
+    name: String!
+    value: String!
+}
+
+type GeoIp {
+    city_name: String
+    continent_name: String
+    country_iso_code: String
+    country_name: String
+    location: String
+    region_iso_code: String
+    region_name: String
+}
+
+type Node {
+    id: ID!
+    name: String
+    foundAt: DateTime!
+    refreshAttemptedAt: DateTime
+    refreshedAt: DateTime
+    openRegistrations: Boolean
+    domain: String!
+    serverIps: [String!]
+    geoip: GeoIp
+    softwareName: String
+    accountFeedCount: Int
+    channelFeedCount: Int
+    softwareVersion: String
+    standardizedSoftwareVersion: String
+    halfYearActiveUserCount: Int
+    monthActiveUserCount: Int
+    statusesCount: Int
+    totalUserCount: Int
+}
+
+type NodeList {
+    paging: Paging!
+    items: [Node!]!
+}
+
+input NodeQueryInput {
+    sortBy: NodeSortingByEnum = refreshedAt
+    sortWay: SortingWayEnum = desc
+    search: String! = ""
+}
+
+enum NodeSortingByEnum {
+    domain
+    softwareName
+    totalUserCount
+    monthActiveUserCount
+    halfYearActiveUserCount
+    statusesCount
+    accountFeedCount
+    openRegistrations
+    refreshedAt
+}
+
+type NodeStats {
+    channel: Int!
+    account: Int!
+}
+
+type Paging {
+    hasNext: Boolean!
+}
+
+input PagingInput {
+    page: Int! = 0
+}
+
+type Sorting {
+    by: String!
+    way: SortingWayEnum!
+}
+
+enum SortingWayEnum {
+    asc
+    desc
+}
+
+type Stats {
+    softwareName: String!
+    nodeCount: Int!
+    accountFeedCount: Int!
+    channelFeedCount: Int!
+}
+
+type StatsList {
+    items: [Stats!]!
+    aggregations: StatsAggregations!
+}
+
+input StatsQueryInput {
+    sortBy: StatsSortingByEnum = nodeCount
+    sortWay: SortingWayEnum = desc
+}
+
+enum StatsSortingByEnum {
+    softwareName
+    nodeCount
+    accountFeedCount
+    channelFeedCount
+}
+
+type StatsAggregations {
+    sum: StatsAggregation!
+    max: StatsAggregation!
+}
+
+type StatsAggregation {
+    nodeCount: Int!
+    accountFeedCount: Int!
+    channelFeedCount: Int!
+}
+
+type Query {
+    countNodeFeeds(nodeDomain: String!): NodeStats
+    listFeeds(paging: PagingInput! = {page: 0}, query: FeedQueryInput! = {search: ""}): FeedList
+    listNodes(paging: PagingInput! = {page: 0}, query: NodeQueryInput! = {sortBy: refreshedAt, sortWay: desc, search: ""}): NodeList
+    listStats(query: StatsQueryInput! = {sortBy: nodeCount, sortWay: desc}): StatsList
+}

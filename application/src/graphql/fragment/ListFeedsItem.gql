@@ -1,0 +1,28 @@
+fragment ListFeedsItem on Feed{
+    id,
+    avatar,
+    displayName,
+    foundAt,
+    bot,
+    createdAt,
+    description,
+    displayName,
+    followersCount,
+    followingCount,
+    lastStatusAt,
+    locked,
+    name,
+    refreshedAt,
+    statusesCount,
+    type,
+    url,
+    fields {
+        name,value
+    }
+    node {
+        ...ListFeedsNode
+    },
+    parent {
+        ...ParentFeed
+    }
+}

@@ -1,0 +1,10 @@
+query ListNodes($paging: PagingInput!, $query: NodeQueryInput!) {
+    listNodes(paging: $paging,query: $query){
+        paging {
+            ...Paging
+        }
+        items {
+            ...ListNodesItem
+        }
+    }
+}
