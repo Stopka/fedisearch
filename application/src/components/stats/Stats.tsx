@@ -1,7 +1,7 @@
 'use client'
 import { useQuery } from '@apollo/client'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import {
   ListStatsDocument,
   SortingWayEnum, StatsAggregationFragment,

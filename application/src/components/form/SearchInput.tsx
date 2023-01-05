@@ -1,12 +1,12 @@
-import React, {ChangeEventHandler, ReactElement} from "react";
+import React, { ChangeEventHandler, ReactElement } from 'react'
 
-export default function SearchInput({label, onChange, value, describedBy}: {
-    label: string,
-    onChange?: ChangeEventHandler,
-    value?: string,
-    describedBy?: string
+export default function SearchInput ({ label, onChange, value, describedBy }: {
+  label: string
+  onChange?: ChangeEventHandler
+  value?: string
+  describedBy?: string
 }): ReactElement {
-    return <input
+  return <input
         name={'search'}
         id={'search'}
         type={'search'}

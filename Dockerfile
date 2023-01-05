@@ -4,6 +4,7 @@ WORKDIR /srv
 COPY application/package*.json ./
 RUN npm install --frozen-lockfile
 COPY application/. .
+RUN chmod -R uog+r .
 RUN npm run build
 
 FROM build as dev
@@ -17,6 +18,7 @@ EXPOSE 3000
 WORKDIR /srv
 COPY --from=build /srv/node_modules ./node_modules
 COPY --from=build /srv/package*.json ./
+COPY --from=build /srv/next.config.js ./
 COPY --from=build --chown=nextjs:nodejs /srv/src/.next ./.next
 COPY --from=build /srv/src/public ./public
 CMD node_modules/.bin/next start

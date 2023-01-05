@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "next dev ./src --hostname 0.0.0.0",
     "build": "next build ./src",
-    "start": "next start ./src",
+    "start": "next start",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "generate:graphql-types": "graphql-codegen-esm --config graphql-codegen.yml"
   },

@@ -1,35 +1,35 @@
 'use client'
-import {faSearch} from '@fortawesome/free-solid-svg-icons'
-import React, {ReactElement} from 'react'
-import {NodeQueryInput} from '../../graphql/generated/types'
-import SearchInput from "../form/SearchInput";
-import SubmitButton from "../form/SubmitButton";
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import React, { ReactElement } from 'react'
+import { NodeQueryInput } from '../../graphql/generated/types'
+import SearchInput from '../form/SearchInput'
+import SubmitButton from '../form/SubmitButton'
 
-export default function NodeForm(
-    {onSubmit, onQueryChange, query}: {
-        onSubmit: () => void
-        onQueryChange: (query: NodeQueryInput) => void
-        query: NodeQueryInput
-    }
+export default function NodeForm (
+  { onSubmit, onQueryChange, query }: {
+    onSubmit: () => void
+    onQueryChange: (query: NodeQueryInput) => void
+    query: NodeQueryInput
+  }
 ): ReactElement {
-    const handleQueryChange = (event): void => {
-        const inputElement = event.target
-        const value = inputElement.value
-        const name = inputElement.name
-        const newQuery = {
-            ...query
-        }
-        newQuery[name] = value
-        onQueryChange(newQuery)
-        event.preventDefault()
+  const handleQueryChange = (event): void => {
+    const inputElement = event.target
+    const value = inputElement.value
+    const name = inputElement.name
+    const newQuery = {
+      ...query
     }
+    newQuery[name] = value
+    onQueryChange(newQuery)
+    event.preventDefault()
+  }
 
-    const handleSubmit = (event): void => {
-        event.preventDefault()
-        onSubmit()
-    }
+  const handleSubmit = (event): void => {
+    event.preventDefault()
+    onSubmit()
+  }
 
-    return (
+  return (
         <form onSubmit={handleSubmit}>
             <div className={'input-group mb-3'}>
                 <SearchInput
@@ -45,5 +45,5 @@ export default function NodeForm(
                 />
             </div>
         </form>
-    )
+  )
 }

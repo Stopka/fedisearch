@@ -1,12 +1,12 @@
-import React, {ReactElement} from "react";
-import {NodeQueryInput, NodeSortingByEnum} from "../../graphql/generated/types";
-import SortToggle from "../SortToggle";
+import React, { ReactElement } from 'react'
+import { NodeQueryInput, NodeSortingByEnum } from '../../graphql/generated/types'
+import SortToggle from '../SortToggle'
 
-export default function NodeHeader({query,onSortToggle}:{
-    query: NodeQueryInput
-    onSortToggle: (sortBy: NodeSortingByEnum)=> void
-}):ReactElement{
-    return (
+export default function NodeHeader ({ query, onSortToggle }: {
+  query: NodeQueryInput
+  onSortToggle: (sortBy: NodeSortingByEnum) => void
+}): ReactElement {
+  return (
         <thead>
         <tr>
             <th rowSpan={2}>
@@ -59,5 +59,5 @@ export default function NodeHeader({query,onSortToggle}:{
             </th>
         </tr>
         </thead>
-    )
+  )
 }

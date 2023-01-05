@@ -1,14 +1,14 @@
-import React, {ReactElement, ReactNode} from "react";
+import React, { ReactElement, ReactNode } from 'react'
 
-export default function ResponsiveTable({children, className}: {
-    children: ReactNode,
-    className?: string
+export default function ResponsiveTable ({ children, className }: {
+  children: ReactNode
+  className?: string
 }): ReactElement {
-    return (
+  return (
         <div className={'table-responsive'}>
-            <table className={`table table-dark table-striped table-bordered nodes ${className??''}`}>
+            <table className={`table table-dark table-striped table-bordered nodes ${className ?? ''}`}>
                 {children}
             </table>
         </div>
-    )
+  )
 }

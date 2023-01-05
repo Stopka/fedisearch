@@ -1,10 +1,9 @@
 'use client'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { ReactElement } from 'react'
 import { FeedQueryInput } from '../../graphql/generated/types'
-import SearchInput from "../form/SearchInput";
-import SubmitButton from "../form/SubmitButton";
+import SearchInput from '../form/SearchInput'
+import SubmitButton from '../form/SubmitButton'
 
 export default function FeedForm (
   { onSubmit, onQueryChange, query }: {
@@ -42,7 +41,7 @@ export default function FeedForm (
                <SubmitButton
                    faIcon={faSearch}
                    label={'Search'}
-                   id={"search-feeds-button"}
+                   id={'search-feeds-button'}
                />
            </div>
        </form>

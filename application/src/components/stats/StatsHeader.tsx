@@ -1,13 +1,13 @@
 'use client'
-import {ReactElement} from "react";
-import {NodeSortingByEnum, StatsQueryInput, StatsSortingByEnum} from "../../graphql/generated/types";
-import SortToggle from "../SortToggle";
+import React, { ReactElement } from 'react'
+import { StatsQueryInput, StatsSortingByEnum } from '../../graphql/generated/types'
+import SortToggle from '../SortToggle'
 
-export default function StatsHeader({query,onSortToggle}: {
-    query: StatsQueryInput,
-    onSortToggle: (sortBy: StatsSortingByEnum) => void
+export default function StatsHeader ({ query, onSortToggle }: {
+  query: StatsQueryInput
+  onSortToggle: (sortBy: StatsSortingByEnum) => void
 }): ReactElement {
-    return <thead>
+  return <thead>
     <tr>
         <th>
             <SortToggle onToggle={onSortToggle} field={'softwareName'} sort={query}>

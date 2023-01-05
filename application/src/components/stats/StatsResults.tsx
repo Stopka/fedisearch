@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { StatsAggregationFragment, StatsItemFragment } from '../../graphql/generated/types'
 import StatsResult from './StatsResult'
 
