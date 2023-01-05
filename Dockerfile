@@ -2,13 +2,13 @@ FROM node:18-bullseye AS prebuild
 FROM prebuild AS build
 WORKDIR /srv
 COPY application/package*.json ./
-RUN npm install --frozen-lockfile
+RUN yarn install
 COPY application/. .
 RUN chmod -R uog+r .
-RUN npm run build
+RUN yarn build
 
 FROM build as dev
-CMD npm run dev
+CMD yarn dev
 
 FROM prebuild AS prod
 RUN groupadd -g 1001 nodejs
@@ -19,6 +19,6 @@ WORKDIR /srv
 COPY --from=build /srv/node_modules ./node_modules
 COPY --from=build /srv/package*.json ./
 COPY --from=build /srv/next.config.js ./
-COPY --from=build --chown=nextjs:nodejs /srv/src/.next ./.next
-COPY --from=build /srv/src/public ./public
-CMD node_modules/.bin/next start
+COPY --from=build --chown=nextjs:nodejs /srv/src/.next ./src/.next
+COPY --from=build /srv/src/public ./src/public
+CMD yarn start
