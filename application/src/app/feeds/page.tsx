@@ -6,7 +6,7 @@ import createConfig from '../../config/createConfig'
 export default async function Page (): Promise<ReactElement> {
   const clientConfig = createConfig().get('client')
   return (
-      <Layout title={'People'} description={'Search people on Fediverse'} config={clientConfig}>
+      <Layout title={'People'} config={clientConfig}>
         <FeedSearch />
       </Layout>
   )

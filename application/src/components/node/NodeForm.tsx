@@ -6,10 +6,11 @@ import SearchInput from '../form/SearchInput'
 import SubmitButton from '../form/SubmitButton'
 
 export default function NodeForm (
-  { onSubmit, onQueryChange, query }: {
+  { onSubmit, onQueryChange, query, loading }: {
     onSubmit: () => void
     onQueryChange: (query: NodeQueryInput) => void
     query: NodeQueryInput
+    loading?: boolean
   }
 ): ReactElement {
   const handleQueryChange = (event): void => {
@@ -42,6 +43,7 @@ export default function NodeForm (
                     label={'Search'}
                     faIcon={faSearch}
                     id={'search-nodes-button'}
+                    loading={loading}
                 />
             </div>
         </form>

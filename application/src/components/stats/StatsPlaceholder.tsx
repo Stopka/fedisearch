@@ -24,8 +24,11 @@ const Row = (): ReactElement => <tr>
 </tr>
 
 export default function StatsPlaceholder ({ rowCount }: { rowCount?: number }): ReactElement {
-  return <tbody>
-        {[...Array(rowCount ?? 1).keys()].map(key => {
+  if (rowCount === undefined || rowCount <= 0) {
+    rowCount = 1
+  }
+  return <tbody className="placeholder-wrapper" aria-hidden="true">
+        {[...Array(rowCount).keys()].map(key => {
           return <Row key={key}/>
         })}
         </tbody>

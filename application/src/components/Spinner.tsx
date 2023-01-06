@@ -1,11 +1,9 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 
-const Spinner: React.FC = () => {
+export default function Spinner (): ReactElement {
   return (
         <div className="spinner-border" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
   )
 }
-
-export default Spinner

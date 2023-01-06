@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@apollo/client'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import React, { ReactElement, useEffect, useState } from 'react'
 import {
   ListStatsDocument,
@@ -30,7 +30,6 @@ export default function Stats (): ReactElement {
   })
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const router = useRouter()
   const matomo = useMatomo()
   let routerQuery: StatsQueryInput
   try {
@@ -42,7 +41,6 @@ export default function Stats (): ReactElement {
       sortWay: SortingWayEnum.Desc
     }
   }
-  console.log('Router query', routerQuery)
   const [query, setQuery] = useState<StatsQueryInput>(routerQuery)
   const { loading, error, data } = useQuery(ListStatsDocument, {
     variables: {
@@ -59,7 +57,7 @@ export default function Stats (): ReactElement {
     setLastSum(sum)
   }, [data])
   useEffect(() => {
-    router.push(`${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
+    window.history.replaceState({}, '', `${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
     matomo.trackEvent({
       category: 'stats',
       action: 'new-search'

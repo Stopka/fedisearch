@@ -7,7 +7,7 @@ import Badge from './badges/Badge'
 export default function FeedPlaceholder (): ReactElement {
   const greyDotBlob = 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=='
   return (
-      <section className="card feed g-col-12 mb-3" aria-hidden="true">
+      <section className="card feed g-col-12 mb-3 placeholder-wrapper" aria-hidden="true">
           <div className="card-body">
               <h3 className={'card-title with-emoji display-name placeholder-glow'}>
                   <a><span className="placeholder col-4"></span></a>

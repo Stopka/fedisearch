@@ -16,7 +16,6 @@ export default function FeedResults ({ feeds }: { feeds: ListFeedsItemFragment[]
   return (<div className={'grid'}>
         {
             feeds.map((feed, index) => {
-              console.info('feed', feed)
               return (<FeedResult key={index} feed={feed} />)
             })
         }

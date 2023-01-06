@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@apollo/client'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { z } from 'zod'
 import {
@@ -38,7 +38,7 @@ export default function NodeSearch (): ReactElement {
   const matomo = useMatomo()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const router = useRouter()
+  const [lastRowCount, setLastRowCount] = useState<number>(1)
   let routerQuery: NodeQueryInput
   try {
     routerQuery = nodeQueryInputSchema.parse(Object.fromEntries(searchParams))
@@ -49,10 +49,10 @@ export default function NodeSearch (): ReactElement {
       sortWay: SortingWayEnum.Desc
     }
   }
-  console.log('Router query', routerQuery)
   const [query, setQuery] = useState<NodeQueryInput>(routerQuery)
   const [page, setPage] = useState<number>(0)
-  const [pageLoading, setPageLoading] = useState<boolean>(false)
+  const [pageLoading, setPageLoading] = useState<undefined | 'sort' | 'submit' | 'more'>(undefined)
+
   const { loading, error, data, fetchMore, refetch } = useQuery(ListNodesDocument, {
     variables: {
       query,
@@ -61,6 +61,14 @@ export default function NodeSearch (): ReactElement {
       }
     }
   })
+
+  useEffect(() => {
+    const items = data?.listNodes?.items
+    if (items === undefined) {
+      return
+    }
+    setLastRowCount(items.length)
+  }, [data])
 
   useEffect(() => {
     matomo.trackEvent({
@@ -75,7 +83,7 @@ export default function NodeSearch (): ReactElement {
     })
   }, [page])
   useEffect((): void => {
-    router.push(`${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
+    window.history.replaceState({}, '', `${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
     matomo.trackEvent({
       category: 'nodes',
       action: 'new-search'
@@ -89,17 +97,17 @@ export default function NodeSearch (): ReactElement {
   }
 
   const handleSearchSubmit = async (): Promise<void> => {
-    setPageLoading(true)
+    setPageLoading('submit')
     setQuery(query)
     setPage(0)
     await refetch({ paging: { page: 0 } })
-    setPageLoading(false)
+    setPageLoading(undefined)
   }
 
   const handleLoadMore = async (): Promise<void> => {
     setPage(page + 1)
     console.info('Loading next page', { query, page })
-    setPageLoading(true)
+    setPageLoading('more')
     await fetchMore({
       variables: {
         paging: { page: page + 1 }
@@ -121,7 +129,7 @@ export default function NodeSearch (): ReactElement {
         return fetchMoreResult
       }
     })
-    setPageLoading(false)
+    setPageLoading(undefined)
   }
 
   const toggleSort = (sortBy: NodeSortingByEnum): void => {
@@ -145,15 +153,18 @@ export default function NodeSearch (): ReactElement {
 
   return (
         <>
-            <NodeForm query={query} onQueryChange={handleQueryChange} onSubmit={handleSearchSubmit}/>
+            <NodeForm query={query} onQueryChange={handleQueryChange} onSubmit={handleSearchSubmit} loading={loading || pageLoading !== undefined}/>
             <ResponsiveTable>
                 <NodeHeader onSortToggle={toggleSort} query={query}/>
-                <Loader loading={loading || pageLoading} showBottom={true} placeholder={(<NodePlaceholder/>)}>
+                <Loader
+                    loading={loading || pageLoading !== undefined}
+                    showBottom={true}
+                    placeholder={(<NodePlaceholder rowCount={pageLoading === 'more' ? 1 : lastRowCount}/>)}>
                     <NodeResults nodes={data?.listNodes?.items}/>
                 </Loader>
             </ResponsiveTable>
             <LoadMoreButton onClick={handleLoadMore}
-                            show={!loading && !pageLoading && data?.listNodes?.paging?.hasNext === true}/>
+                            show={!loading && pageLoading === undefined && data?.listNodes?.paging?.hasNext === true}/>
             <ErrorMessage message={error?.message}/>
         </>
   )

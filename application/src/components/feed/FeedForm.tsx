@@ -6,10 +6,11 @@ import SearchInput from '../form/SearchInput'
 import SubmitButton from '../form/SubmitButton'
 
 export default function FeedForm (
-  { onSubmit, onQueryChange, query }: {
+  { onSubmit, onQueryChange, query, loading }: {
     onSubmit: () => void
     onQueryChange: (query: FeedQueryInput) => void
     query: FeedQueryInput
+    loading?: boolean
   }
 ): ReactElement {
   const handleQueryChange = (event): void => {
@@ -41,6 +42,7 @@ export default function FeedForm (
                <SubmitButton
                    faIcon={faSearch}
                    label={'Search'}
+                   loading={loading}
                    id={'search-feeds-button'}
                />
            </div>

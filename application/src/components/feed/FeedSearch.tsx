@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@apollo/client'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { z } from 'zod'
 import { FeedQueryInput, ListFeedsDocument } from '../../graphql/generated/types'
@@ -27,7 +27,6 @@ export default function FeedSearch (): ReactElement {
   const matomo = useMatomo()
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const router = useRouter()
   const routerQuery = feedQueryInputSchema.parse(Object.fromEntries(searchParams))
   const [page, setPage] = useState<number>(0)
   const [query, setQuery] = useState<FeedQueryInput>(routerQuery)
@@ -39,7 +38,7 @@ export default function FeedSearch (): ReactElement {
     }
   })
   useEffect((): void => {
-    router.push(`${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
+    window.history.replaceState({}, '', `${pathname ?? ''}?${createUrlSearchParams(query).toString()}`)
     matomo.trackEvent({
       category: 'feeds',
       action: 'new-search'
@@ -95,7 +94,7 @@ export default function FeedSearch (): ReactElement {
   }
 
   return <>
-        <FeedForm query={query} onQueryChange={handleQueryChange} onSubmit={handleSearchSubmit}/>
+        <FeedForm query={query} onQueryChange={handleQueryChange} onSubmit={handleSearchSubmit} loading={loading || pageLoading}/>
         <FeedInfo show={query.search === ''}>
             <Loader loading={loading || pageLoading} showBottom={true} placeholder={(<FeedPlaceholder/>)}>
                 <FeedResults feeds={data?.listFeeds?.items}/>
