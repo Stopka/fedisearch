@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react'
 import { ListNodesItemFragment } from '../../graphql/generated/types'
+import FormattedDate from '../FormattedDate'
 import SoftwareBadge from '../SoftwareBadge'
 
 export default function NodeResult ({ node }: { node: ListNodesItemFragment }): ReactElement {
@@ -22,7 +23,7 @@ export default function NodeResult ({ node }: { node: ListNodesItemFragment }): 
                   ? '?'
                   : (node.openRegistrations ? 'Opened' : 'Closed')
             }</td>
-            <td>{node.refreshedAt !== '' ? (new Date(node.refreshedAt)).toLocaleDateString() : 'Never'}</td>
+            <td><FormattedDate timestamp={node.refreshedAt} emptyValue={'Never'} timeTitle={true} /></td>
         </tr>
   )
 }
